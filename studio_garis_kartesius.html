@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio Persamaan Garis Lurus - Belajar Cerdas & Visual</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Plus Jakarta Sans & Nunito -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f5f3ff; /* Light purple-indigo background */
+            user-select: none;
+        }
+        h1, h2, h3, h4, h5 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        /* Custom slide transition style */
+        .slide-container {
+            transition: all 0.4s ease-in-out;
+        }
+        /* Interactive grid drawing class */
+        .cartesian-canvas {
+            background-color: #ffffff;
+            border: 2px solid #e0e7ff;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between overflow-x-hidden p-2 md:p-6 text-slate-800">
+
+<script>
+    // Web Audio Synthesizer for rich education feedback sounds
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let soundEnabled = true;
+
+    function playSound(type) {
+        if (!soundEnabled) return;
+        try {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            if (type === 'click') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.15);
+            } else if (type === 'correct') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.08); // E5
+                osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.16); // G5
+                osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.24); // C6
+                gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.4);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            } else if (type === 'slide') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(450, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(350, audioCtx.currentTime + 0.18);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.18);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.18);
+            } else if (type === 'triumph') {
+                // Happy celebration sound
+                osc.type = 'square';
+                const now = audioCtx.currentTime;
+                osc.frequency.setValueAtTime(261.63, now); // C4
+                osc.frequency.setValueAtTime(329.63, now + 0.1); // E4
+                osc.frequency.setValueAtTime(392.00, now + 0.2); // G4
+                osc.frequency.setValueAtTime(523.25, now + 0.3); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.4); // E5
+                osc.frequency.setValueAtTime(783.99, now + 0.5); // G5
+                osc.frequency.setValueAtTime(1046.50, now + 0.6); // C6
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.9);
+                osc.start();
+                osc.stop(now + 0.9);
+            }
+        } catch(e) { console.warn(e); }
+    }
+</script>
+
+<header class="w-full max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-4 bg-white/95 backdrop-blur-md py-4 px-6 rounded-2xl shadow-sm border border-indigo-100 z-10">
+    <div class="flex items-center gap-3">
+        <div class="w-11 h-11 bg-indigo-600 rounded-xl flex items-center justify-center text-white text-xl shadow-md font-black">📈</div>
+        <div>
+            <h1 class="text-lg md:text-xl font-extrabold text-indigo-900 tracking-tight">Persamaan Garis Lurus (PGL)</h1>
+            <p class="text-xs text-indigo-600 font-bold">Studio Belajar Interaktif - Kelas VIII SMP</p>
+        </div>
+    </div>
+    
+    <div class="flex items-center gap-3">
+        <!-- Sound control -->
+        <button onclick="soundEnabled = !soundEnabled; this.classList.toggle('bg-indigo-50'); this.classList.toggle('text-indigo-700'); playSound('click');" 
+                class="bg-indigo-600 text-white font-bold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-all shadow-sm active:scale-95">
+            <span id="sound-icon">🔊</span> Efek Suara
+        </button>
+        <!-- Restart Button -->
+        <button onclick="goToSlide(0)" class="bg-white hover:bg-indigo-50 border-2 border-indigo-100 text-indigo-700 font-extrabold text-xs px-4 py-2 rounded-xl transition-all shadow-sm">
+            Mulai Dari Awal
+        </button>
+    </div>
+</header>
+
+<main class="flex-grow w-full max-w-6xl mx-auto my-6 flex flex-col justify-center items-center relative min-h-[550px]">
+    
+    <!-- SLIDE 1: JUDUL & BELAJAR BERKONSEP -->
+    <section id="slide-0" class="slide-container hidden w-full bg-white rounded-3xl shadow-xl border-4 border-indigo-500 p-6 md:p-10 flex flex-col md:flex-row gap-8 items-center justify-between">
+        <div class="flex-1 space-y-6">
+            <div class="inline-block bg-indigo-100 text-indigo-700 font-black text-xs px-3.5 py-1.5 rounded-full uppercase tracking-wider">🎯 Misi Pembelajaran - Slide 1</div>
+            <h2 class="text-3xl md:text-5xl font-black text-indigo-950 leading-tight">Menjadi Detektif Kemiringan Garis!</h2>
+            
+            <p class="text-slate-600 text-sm md:text-base font-semibold leading-relaxed">
+                Pernahkah kamu memperhatikan tanjakan jalan raya, kemiringan atap rumah, atau tarif ojek online yang bertambah sesuai jaraknya? Semuanya dikendalikan oleh satu ilmu matematika keren: <strong class="text-indigo-600">Persamaan Garis Lurus</strong>!
+            </p>
+
+            <div class="bg-indigo-50/50 rounded-2xl p-5 border border-indigo-100 space-y-3">
+                <h3 class="text-base font-extrabold text-indigo-950 flex items-center gap-2">🔍 Apa yang akan kita taklukkan hari ini?</h3>
+                <ul class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs md:text-sm font-bold text-slate-700">
+                    <li class="flex items-center gap-2">✨ Mengenal Bentuk Umum y = mx + c</li>
+                    <li class="flex items-center gap-2">📈 Menghitung Kemiringan (Gradien)</li>
+                    <li class="flex items-center gap-2">✍️ Menyusun Persamaan Garis</li>
+                    <li class="flex items-center gap-2">📐 Hubungan Garis Sejajar & Tegak Lurus</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Beautiful visual mascot/graphic side -->
+        <div class="w-full md:w-96 flex flex-col items-center justify-center p-6 bg-indigo-50 rounded-2xl border border-indigo-100 relative">
+            <svg class="w-48 h-48 animate-pulse" viewBox="0 0 100 100">
+                <!-- Cartesian grid lines -->
+                <line x1="10" y1="50" x2="90" y2="50" stroke="#c7d2fe" stroke-width="1.5" />
+                <line x1="50" y1="10" x2="50" y2="90" stroke="#c7d2fe" stroke-width="1.5" />
+                <!-- Slanted line -->
+                <line x1="20" y1="80" x2="80" y2="20" stroke="#4f46e5" stroke-width="4" stroke-linecap="round" />
+                <!-- Math mascot / compass -->
+                <circle cx="50" cy="50" r="12" fill="#818cf8" />
+                <circle cx="50" cy="50" r="6" fill="#ffffff" />
+                <path d="M 50 30 L 65 50 L 50 50 Z" fill="#f43f5e" />
+            </svg>
+            <div class="mt-4 bg-white px-4 py-2.5 rounded-xl border border-indigo-200 text-center shadow-sm">
+                <span class="text-xs md:text-sm font-extrabold text-indigo-800">"PGL itu mudah jika kita melihat langsung bentuk grafiknya!"</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: DIAGNOSTIC WARM-UP -->
+    <section id="slide-1" class="slide-container hidden w-full bg-white rounded-3xl shadow-xl border-4 border-indigo-500 p-6 md:p-10 space-y-6">
+        <div class="flex items-center gap-3">
+            <span class="bg-indigo-100 text-indigo-700 font-black text-xs px-3.5 py-1.5 rounded-full uppercase">Pemanasan - Slide 2</span>
+            <h2 class="text-2xl md:text-3xl font-black text-indigo-950">Diagnostic Warm-Up (Pengecekan Awal)</h2>
+        </div>
+        <p class="text-slate-600 font-bold text-sm">Mari kita uji ingatanmu tentang Koordinat Kartesius & Aljabar Sederhana:</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Soal 1 & 2 -->
+            <div class="space-y-4">
+                <div class="bg-indigo-50/50 border border-indigo-100 p-4 rounded-2xl">
+                    <h3 class="font-extrabold text-sm text-indigo-950 mb-3">Soal 1: Tebak Kuadran Titik Koordinat</h3>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <button onclick="checkWarmUpQ1(this, 'I')" class="bg-white hover:bg-indigo-50 border p-2 rounded-xl font-bold flex justify-between items-center">
+                            <span>A. (3, 2)</span>
+                            <span class="text-[10px] text-slate-400">Kuadran ...</span>
+                        </button>
+                        <button onclick="checkWarmUpQ1(this, 'II')" class="bg-white hover:bg-indigo-50 border p-2 rounded-xl font-bold flex justify-between items-center">
+                            <span>B. (-4, 5)</span>
+                            <span class="text-[10px] text-slate-400">Kuadran ...</span>
+                        </button>
+                        <button onclick="checkWarmUpQ1(this, 'III')" class="bg-white hover:bg-indigo-50 border p-2 rounded-xl font-bold flex justify-between items-center">
+                            <span>C. (-2, -3)</span>
+                            <span class="text-[10px] text-slate-400">Kuadran ...</span>
+                        </button>
+                        <button onclick="checkWarmUpQ1(this, 'IV')" class="bg-white hover:bg-indigo-50 border p-2 rounded-xl font-bold flex justify-between items-center">
+                            <span>D. (5, -1)</span>
+                            <span class="text-[10px] text-slate-400">Kuadran ...</span>
+                        </button>
+                    </div>
+                    <div id="q1-warmup-result" class="mt-3 text-xs font-bold text-indigo-600 hidden"></div>
+                </div>
+
+                <div class="bg-indigo-50/50 border border-indigo-100 p-4 rounded-2xl">
+                    <h3 class="font-extrabold text-sm text-indigo-950 mb-2">Soal 2: Substitusi Nilai y = 2x + 1</h3>
+                    <div class="space-y-2 text-xs font-semibold">
+                        <div class="flex items-center justify-between bg-white p-2 rounded-xl border">
+                            <span>Jika x = 0, maka y = ...</span>
+                            <button onclick="this.innerText='1 (Betul!)'; this.className='bg-emerald-500 text-white px-3 py-1 rounded-lg font-bold';" class="bg-indigo-50 hover:bg-indigo-100 px-3 py-1 rounded-lg text-indigo-700">Tampilkan Jawaban</button>
+                        </div>
+                        <div class="flex items-center justify-between bg-white p-2 rounded-xl border">
+                            <span>Jika x = 2, maka y = ...</span>
+                            <button onclick="this.innerText='5 (Betul!)'; this.className='bg-emerald-500 text-white px-3 py-1 rounded-lg font-bold';" class="bg-indigo-50 hover:bg-indigo-100 px-3 py-1 rounded-lg text-indigo-700">Tampilkan Jawaban</button>
+                        </div>
+                        <div class="flex items-center justify-between bg-white p-2 rounded-xl border">
+                            <span>Jika x = -1, maka y = ...</span>
+                            <button onclick="this.innerText='-1 (Betul!)'; this.className='bg-emerald-500 text-white px-3 py-1 rounded-lg font-bold';" class="bg-indigo-50 hover:bg-indigo-100 px-3 py-1 rounded-lg text-indigo-700">Tampilkan Jawaban</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Soal 3 & 4 -->
+            <div class="space-y-4">
+                <div class="bg-indigo-50/50 border border-indigo-100 p-4 rounded-2xl">
+                    <h3 class="font-extrabold text-sm text-indigo-950 mb-2">Soal 3: Mana yang Merupakan Persamaan Garis Lurus?</h3>
+                    <p class="text-[11px] text-slate-500 mb-2 font-semibold">Trik: PGL hanya memiliki variabel pangkat 1 (tidak ada kuadrat x² atau akar √x).</p>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <button onclick="checkPGLIdentify(this, true)" class="bg-white hover:bg-indigo-50 border p-2.5 rounded-xl font-bold text-center">
+                            y = 3x + 5
+                        </button>
+                        <button onclick="checkPGLIdentify(this, false)" class="bg-white hover:bg-indigo-50 border p-2.5 rounded-xl font-bold text-center">
+                            y = x² + 1
+                        </button>
+                        <button onclick="checkPGLIdentify(this, true)" class="bg-white hover:bg-indigo-50 border p-2.5 rounded-xl font-bold text-center">
+                            2x - y = 7
+                        </button>
+                        <button onclick="checkPGLIdentify(this, false)" class="bg-white hover:bg-indigo-50 border p-2.5 rounded-xl font-bold text-center">
+                            y = √x
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-indigo-50/50 border border-indigo-100 p-4 rounded-2xl">
+                    <h3 class="font-extrabold text-sm text-indigo-950 mb-2">Soal 4: Menghubungkan Titik (0,3) dan (2,7)</h3>
+                    <p class="text-xs text-slate-600 font-semibold leading-relaxed mb-3">
+                        Dua titik ini jika dihubungkan dengan penggaris akan membentuk sebuah garis lurus tanpa belokan!
+                    </p>
+                    <button onclick="toggleAnswer('warmup-s4-ans')" class="w-full bg-indigo-600 text-white font-extrabold text-xs py-2 rounded-xl transition-all active:scale-95 shadow">
+                        Buka Ilustrasi Koordinat
+                    </button>
+                    <div id="warmup-s4-ans" class="hidden mt-3 bg-white p-3 rounded-xl border border-indigo-100 text-center text-xs font-bold">
+                        <p class="text-indigo-700">Persamaan yang terbentuk adalah: y = 2x + 3</p>
+                        <p class="text-slate-500 text-[10px] mt-1 font-semibold">Kita akan mempelajari cara menyusun ini di slide berikutnya!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: PENERAPAN DALAM KEHIDUPAN SEHARI-HARI -->
+    <section id="slide-2" class="slide-container hidden w-full bg-white rounded-3xl shadow-xl border-4 border-indigo-500 p-6 md:p-10 space-y-6">
+        <div class="flex items-center gap-3">
+            <span class="bg-indigo-100 text-indigo-700 font-black text-xs px-3.5 py-1.5 rounded-full uppercase">Penerapan - Slide 3</span>
+            <h2 class="text-2xl md:text-3xl font-black text-indigo-950">Penerapan Persamaan Garis dalam Kehidupan Nyata</h2>
+        </div>
+        <p class="text-slate-600 text-sm font-semibold">Ternyata, rumus matematika PGL bekerja otomatis di berbagai situasi harian kita:</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- 1. Tabungan Harian -->
+            <div class="bg-indigo-50/50 border border-indigo-100 p-4 rounded-2xl flex flex-col justify-between">
+                <div>
+                    <h3 class="font-extrabold text-indigo-950 text-base flex items-center gap-2">💰 1. Tabungan Harian Andi</h3>
+                    <p class="text-xs text-slate-500 font-semibold mt-1">Andi menabung Rp5.000 setiap harinya. Berapa isi tabungannya?</p>
+                </div>
+                <div class="bg-white border rounded-xl p-3 my-2 space-y-1.5 text-xs font-bold text-slate-700">
+                    <div class="flex justify-between"><span>Hari ke-0:</span> <span class="text-slate-500">Rp0</span></div>
+                    <div class="flex justify-between"><span>Hari ke-1:</span> <span class="text-indigo-600">Rp5.000</span></div>
+                    <div class="flex justify-between"><span>Hari ke-2:</span> <span class="text-indigo-600">Rp10.000</span></div>
+                    <div class="flex justify-between"><span>Hari ke-3:</span> <span class="text-indigo-600">Rp15.000</span></div>
+                </div>
+                <div class="bg-indigo-100/50 p-2 rounded-xl text-center font-black text-xs text-indigo-800">
+                    Persamaan: y = 5.000x
+                </div>
+            </div>
+
+            <!-- 2. Tarif Ojek Online -->
+            <div class="bg-indigo-50/50 border border-indigo-100 p-4 rounded-2xl flex flex-col justify-between">
+                <div>
+                    <h3 class="font-extrabold text-indigo-950 text-base flex items-center gap-2">🛵 2. Tarif Ojek Online</h3>
+                    <p class="text-xs text-slate-500 font-semibold mt-1">Biaya awal (buka pintu) Rp10.000, ditambah tarif Rp3.000 per kilometer.</p>
+                </div>
+                <!-- Interactive Ojek Calculator -->
+                <div class="bg-white border rounded-xl p-3 my-2 space-y-3 text-xs">
+                    <div class="flex justify-between font-bold text-slate-700">
+                        <span>Pilih Jarak Tempuh:</span>
+                        <span id="ojek-km-label" class="text-indigo-600">3 km</span>
+                    </div>
+                    <input type="range" id="ojek-slider" min="0" max="10" value="3" oninput="calculateOjek(this.value)" class="w-full accent-indigo-600">
+                    <div class="flex justify-between font-extrabold text-slate-900 border-t pt-2">
+                        <span>Total Ongkos (y):</span>
+                        <span id="ojek-cost" class="text-emerald-600">Rp19.000</span>
+                    </div>
+                </div>
+                <div class="bg-indigo-100/50 p-2 rounded-xl text-center font-black text-xs text-indigo-800">
+                    Persamaan: y = 3.000x + 10.000
+                </div>
+            </div>
+
+            <!-- 3. Kecepatan Kendaraan -->
+            <div class="bg-indigo-50/50 border border-indigo-100 p-4 rounded-2xl flex flex-col justify-between">
+                <div>
+                    <h3 class="font-extrabold text-indigo-950 text-base flex items-center gap-2">🚗 3. Jarak Tempuh Mobil</h3>
+                    <p class="text-xs text-slate-500 font-semibold mt-1">Mobil bergerak konstan dengan kecepatan tetap 60 km/jam.</p>
+                </div>
+                <p class="text-xs font-bold text-slate-700 py-3 leading-relaxed">
+                    Setiap jam berlalu (t), jarak tempuh mobil (s) bertambah sejauh 60 km.
+                </p>
+                <div class="bg-indigo-100/50 p-2 rounded-xl text-center font-black text-xs text-indigo-800">
+                    Persamaan Fisika: s = 60t
+                </div>
+            </div>
+
+            <!-- 4. Tinggi Tanaman -->
+            <div class="bg-indigo-50/50 border border-indigo-100 p-4 rounded-2xl flex flex-col justify-between">
+                <div>
+                    <h3 class="font-extrabold text-indigo-950 text-base flex items-center gap-2">🌱 4. Tinggi Tanaman Hias</h3>
+                    <p class="text-xs text-slate-500 font-semibold mt-1">Tinggi mula-mula adalah 20 cm, lalu bertambah tinggi 3 cm setiap minggunya.</p>
+                </div>
+                <p class="text-xs font-bold text-slate-700 py-3 leading-relaxed">
+                    Setiap minggu bertambah (m), tinggi tanaman bertambah.
+                </p>
+                <div class="bg-indigo-100/50 p-2 rounded-xl text-center font-black text-xs text-indigo-800">
+                    Persamaan Biologi: h = 3m + 20
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: BENTUK UMUM PERSAMAAN GARIS -->
+    <section id="slide-3" class="slide-container hidden w-full bg-white rounded-3xl shadow-xl border-4 border-indigo-500 p-6 md:p-10 space-y-6">
+        <div class="flex items-center gap-3">
+            <span class="bg-indigo-100 text-indigo-700 font-black text-xs px-3.5 py-1.5 rounded-full uppercase">Konsep Utama - Slide 4</span>
+            <h2 class="text-2xl md:text-3xl font-black text-indigo-950">Bentuk Umum Persamaan: y = mx + c</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+            <!-- Sandbox controls and legend -->
+            <div class="space-y-4">
+                <div class="bg-indigo-50 border-2 border-indigo-200 p-4 rounded-2xl">
+                    <p class="text-base font-black text-indigo-950 text-center mb-2">
+                        Bentuk Standar: y = mx + c
+                    </p>
+                    <div class="grid grid-cols-2 gap-3 text-xs font-bold mt-2 text-slate-700">
+                        <div class="bg-white p-2.5 rounded-xl border border-slate-100">
+                            <span class="text-indigo-600 block text-[10px] font-black uppercase">y & x</span>
+                            Variabel Bebas & Terikat
+                        </div>
+                        <div class="bg-white p-2.5 rounded-xl border border-slate-100">
+                            <span class="text-rose-500 block text-[10px] font-black uppercase">m</span>
+                            Gradien / Kemiringan
+                        </div>
+                        <div class="bg-white p-2.5 rounded-xl border border-slate-100 col-span-2">
+                            <span class="text-emerald-500 block text-[10px] font-black uppercase">c</span>
+                            Titik Potong Sumbu-Y (Intersep-Y)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Canvas controls -->
+                <div class="bg-slate-50 border border-slate-200 p-4 rounded-2xl space-y-4">
+                    <h3 class="text-xs font-black text-slate-700 uppercase">Ubah Nilai untuk Melihat Gerakan Garis:</h3>
+                    
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs font-extrabold text-slate-700">
+                            <span>Gradien (m) - Mengatur Kemiringan:</span>
+                            <span id="m-val-label" class="text-rose-500 font-black">1.0</span>
+                        </div>
+                        <input type="range" id="m-slider" min="-3" max="3" step="0.5" value="1" oninput="updateLinePlotter()" class="w-full accent-rose-500">
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs font-extrabold text-slate-700">
+                            <span>Intersep-Y (c) - Menggeser Garis Naik/Turun:</span>
+                            <span id="c-val-label" class="text-emerald-500 font-black">2.0</span>
+                        </div>
+                        <input type="range" id="c-slider" min="-5" max="5" step="1" value="2" oninput="updateLinePlotter()" class="w-full accent-emerald-500">
+                    </div>
+
+                    <div class="bg-indigo-900 text-white p-3 rounded-xl text-center font-extrabold text-sm shadow">
+                        Persamaan Garis Saat Ini: <span id="eq-display" class="text-amber-300">y = 1.0x + 2</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Cartesian Canvas Plotter -->
+            <div class="flex flex-col items-center">
+                <span class="text-xs font-bold text-slate-500 mb-2">Simulasi Real-time Bidang Kartesius:</span>
+                <canvas id="cartesian-canvas-s3" width="300" height="300" class="cartesian-canvas"></canvas>
+                <div class="flex gap-4 text-[10px] font-bold text-slate-500 mt-2">
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 bg-rose-500 rounded-full"></span> Gradien (m)</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 bg-emerald-500 rounded-full"></span> Titik Potong Y (c)</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: GRADIEN (KEMIRINGAN) -->
+    <section id="slide-4" class="slide-container hidden w-full bg-white rounded-3xl shadow-xl border-4 border-indigo-500 p-6 md:p-10 space-y-6">
+        <div class="flex items-center gap-3">
+            <span class="bg-indigo-100 text-indigo-700 font-black text-xs px-3.5 py-1.5 rounded-full uppercase">Gradien - Slide 5</span>
+            <h2 class="text-2xl md:text-3xl font-black text-indigo-950">Apa itu Gradien (m)?</h2>
+        </div>
+        <p class="text-slate-600 font-bold text-sm">Gradien adalah ukuran seberapa miring/curam sebuah garis lurus.</p>
+
+        <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-2xl flex flex-wrap items-center justify-around gap-4 text-center">
+            <div class="text-xs font-black">
+                <span class="text-slate-500 block">Rumus Dasar Kemiringan:</span>
+                <div class="inline-flex items-center gap-2 text-sm md:text-base mt-2 bg-white px-3 py-1.5 rounded-xl border">
+                    <span class="text-rose-500">m</span>
+                    <span>=</span>
+                    <div class="flex flex-col items-center text-xs">
+                        <span class="border-b border-slate-700 px-2">Δy (Perubahan Vertikal / Naik-Turun)</span>
+                        <span>Δx (Perubahan Horizontal / Kanan-Kiri)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- 1. Positive slope -->
+            <button onclick="playSound('click'); playAnimationS4('up');" class="bg-emerald-50 border-2 border-emerald-200 p-4 rounded-2xl hover:border-emerald-400 text-left transition-all relative">
+                <span class="absolute top-2 right-2 bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">m > 0</span>
+                <h4 class="font-extrabold text-emerald-950 text-base">Garis Naik 📈</h4>
+                <p class="text-xs text-emerald-700 font-semibold mt-1">Garis berjalan naik dari kiri ke kanan. Kemiringannya bernilai POSITIF.</p>
+                <div class="h-20 bg-white border border-emerald-100 rounded-xl mt-3 relative overflow-hidden flex items-end">
+                    <div id="car-up" class="absolute left-2 bottom-2 text-2xl transition-all duration-1000">🚗</div>
+                    <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <line x1="0" y1="90" x2="100" y2="10" stroke="#10b981" stroke-width="3" />
+                    </svg>
+                </div>
+            </button>
+
+            <!-- 2. Negative slope -->
+            <button onclick="playSound('click'); playAnimationS4('down');" class="bg-rose-50 border-2 border-rose-200 p-4 rounded-2xl hover:border-rose-400 text-left transition-all relative">
+                <span class="absolute top-2 right-2 bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">m < 0</span>
+                <h4 class="font-extrabold text-rose-950 text-base">Garis Turun 📉</h4>
+                <p class="text-xs text-rose-700 font-semibold mt-1">Garis berjalan turun dari kiri ke kanan. Kemiringannya bernilai NEGATIF.</p>
+                <div class="h-20 bg-white border border-rose-100 rounded-xl mt-3 relative overflow-hidden">
+                    <div id="car-down" class="absolute left-2 top-2 text-2xl transition-all duration-1000">🚗</div>
+                    <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <line x1="0" y1="10" x2="100" y2="90" stroke="#f43f5e" stroke-width="3" />
+                    </svg>
+                </div>
+            </button>
+
+            <!-- 3. Zero slope -->
+            <button onclick="playSound('click'); playAnimationS4('flat');" class="bg-blue-50 border-2 border-blue-200 p-4 rounded-2xl hover:border-blue-400 text-left transition-all relative">
+                <span class="absolute top-2 right-2 bg-blue-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">m = 0</span>
+                <h4 class="font-extrabold text-blue-950 text-base">Garis Datar ➔</h4>
+                <p class="text-xs text-blue-700 font-semibold mt-1">Garis sejajar horizontal sempurna. Kemiringannya bernilai NOL (Datar).</p>
+                <div class="h-20 bg-white border border-blue-100 rounded-xl mt-3 relative overflow-hidden flex items-center">
+                    <div id="car-flat" class="absolute left-2 text-2xl transition-all duration-1000">🚗</div>
+                    <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <line x1="0" y1="50" x2="100" y2="50" stroke="#3b82f6" stroke-width="3" />
+                    </svg>
+                </div>
+            </button>
+        </div>
+        <p class="text-center text-xs font-bold text-slate-500">Klik kartu di atas untuk melihat animasi mobil melaju di jalanan miring!</p>
+    </section>
+
+    <!-- SLIDE 6: MENENTUKAN GRADIEN DARI PERSAMAAN & DUA TITIK -->
+    <section id="slide-5" class="slide-container hidden w-full bg-white rounded-3xl shadow-xl border-4 border-indigo-500 p-6 md:p-10 space-y-6">
+        <div class="flex items-center gap-3">
+            <span class="bg-indigo-100 text-indigo-700 font-black text-xs px-3.5 py-1.5 rounded-full uppercase">Penyelesaian - Slide 6</span>
+            <h2 class="text-2xl md:text-3xl font-black text-indigo-950">Cara Menentukan Gradien</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Left Column: From Equations -->
+            <div class="border-2 border-indigo-100 bg-indigo-50/30 p-5 rounded-2xl space-y-4">
+                <h3 class="font-extrabold text-indigo-950 text-base">1. Dari Persamaan Garis</h3>
+                <p class="text-xs text-slate-600 font-bold">Ubah persamaan ke dalam format baku: <strong class="text-indigo-600">y = mx + c</strong>. Angka di depan x adalah gradien (m)!</p>
+                
+                <div class="space-y-2 text-xs font-bold">
+                    <div class="bg-white p-3 rounded-xl border flex justify-between items-center">
+                        <div>
+                            <span class="block text-slate-400 text-[10px]">Contoh A:</span>
+                            <span class="text-sm">y = 3x + 5</span>
+                        </div>
+                        <span class="bg-indigo-100 text-indigo-800 px-3 py-1.5 rounded-lg text-xs">Gradien (m) = 3</span>
+                    </div>
+
+                    <div class="bg-white p-3 rounded-xl border flex justify-between items-center">
+                        <div>
+                            <span class="block text-slate-400 text-[10px]">Contoh B:</span>
+                            <span class="text-sm">y = -2x + 1</span>
+                        </div>
+                        <span class="bg-indigo-100 text-indigo-800 px-3 py-1.5 rounded-lg text-xs">Gradien (m) = -2</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: From Two Points -->
+            <div class="border-2 border-indigo-100 bg-indigo-50/30 p-5 rounded-2xl space-y-4">
+                <h3 class="font-extrabold text-indigo-950 text-base">2. Dari Dua Titik (x₁, y₁) dan (x₂, y₂)</h3>
+                <p class="text-xs text-slate-600 font-bold">Gunakan rumus selisih tinggi dibagi selisih mendatar:</p>
+                
+                <div class="bg-white p-3 rounded-xl border flex flex-col items-center justify-center text-xs font-bold py-4">
+                    <div class="inline-flex items-center gap-2">
+                        <span>m =</span>
+                        <div class="flex flex-col items-center">
+                            <span class="border-b border-slate-700 px-3 pb-1">y₂ - y₁</span>
+                            <span class="pt-1">x₂ - x₁</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step-by-Step calculation visual -->
+                <div class="bg-white p-3 rounded-xl border text-xs space-y-2">
+                    <h4 class="font-bold text-slate-700">Contoh: Melalui titik (2, 3) dan (5, 9)</h4>
+                    <div id="grad-calc-step" class="hidden font-bold text-slate-800 space-y-1 bg-indigo-50 p-2.5 rounded-lg border border-indigo-100">
+                        <p>1. Ambil x₁=2, y₁=3 dan x₂=5, y₂=9</p>
+                        <p>2. m = (9 - 3) / (5 - 2)</p>
+                        <p>3. m = 6 / 3</p>
+                        <p class="text-emerald-600">4. Gradien (m) = 2 ⭐</p>
+                    </div>
+                    <button onclick="toggleAnswer('grad-calc-step')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs py-1.5 rounded-lg transition-all">
+                        Tampilkan Cara Hitungnya
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: PERSAMAAN GARIS MELALUI SATU TITIK -->
+    <section id="slide-6" class="slide-container hidden w-full bg-white rounded-3xl shadow-xl border-4 border-indigo-500 p-6 md:p-10 space-y-6">
+        <div class="flex items-center gap-3">
+            <span class="bg-indigo-100 text-indigo-700 font-black text-xs px-3.5 py-1.5 rounded-full uppercase">Rumus - Slide 7</span>
+            <h2 class="text-2xl md:text-3xl font-black text-indigo-950">Persamaan Garis Melalui Satu Titik & Gradien</h2>
+        </div>
+        <p class="text-slate-600 font-bold text-sm">Jika kamu diberi tahu sebuah **gradien (m)** dan garis tersebut melewati titik **(x₁, y₁)**, gunakan formula sakti ini:</p>
+
+        <div class="bg-indigo-50 border border-indigo-100 p-5 rounded-2xl flex flex-col items-center justify-center text-center">
+            <span class="text-xs text-slate-500 font-bold mb-1">Formula Titik-Gradien:</span>
+            <div class="text-lg md:text-2xl font-black text-indigo-950 bg-white px-6 py-2.5 rounded-2xl border-2 border-indigo-200 shadow-sm">
+                y - y₁ = m(x - x₁)
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+            <div class="space-y-3">
+                <h3 class="font-extrabold text-sm text-slate-700">Contoh Nyata Kasus:</h3>
+                <div class="bg-slate-50 p-4 rounded-xl border text-xs font-bold space-y-2">
+                    <p class="text-indigo-900">Tentukan persamaan garis dengan gradien 3 melalui titik (2, 5)!</p>
+                    <div id="s7-solution" class="hidden space-y-2 bg-emerald-50/50 border border-emerald-200 p-3 rounded-lg text-slate-700">
+                        <p>1. Diketahui m = 3, x₁ = 2, y₁ = 5</p>
+                        <p>2. y - 5 = 3(x - 2)</p>
+                        <p>3. y - 5 = 3x - 6</p>
+                        <p>4. y = 3x - 6 + 5</p>
+                        <p class="text-indigo-900 font-extrabold">5. y = 3x - 1 ⭐</p>
+                    </div>
+                    <button onclick="toggleAnswer('s7-solution')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-2 rounded-xl transition-all">
+                        Tampilkan Solusi Bertahap
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-indigo-50/50 p-5 rounded-2xl border border-indigo-100">
+                <h4 class="font-extrabold text-indigo-950 text-sm mb-2">💡 Tips untuk Siswa Slow Learning:</h4>
+                <p class="text-xs text-slate-600 leading-relaxed font-semibold">
+                    Bayangkan formula ini seperti memasukkan angka ke dalam wadah cetakan kue. Kita tinggal menuangkan angka gradien <span class="text-rose-500 font-bold">m</span>, titik <span class="text-indigo-600 font-bold">x₁</span>, dan titik <span class="text-emerald-500 font-bold">y₁</span> ke dalam kurung cetakan, lalu rapikan adonannya!
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: PERSAMAAN GARIS MELALUI DUA TITIK -->
+    <section id="slide-7" class="slide-container hidden w-full bg-white rounded-3xl shadow-xl border-4 border-indigo-500 p-6 md:p-10 space-y-6">
+        <div class="flex items-center gap-3">
+            <span class="bg-indigo-100 text-indigo-700 font-black text-xs px-3.5 py-1.5 rounded-full uppercase">Eksplorasi - Slide 8</span>
+            <h2 class="text-2xl md:text-3xl font-black text-indigo-950">Menyusun Persamaan Garis Melalui Dua Titik</h2>
+        </div>
+        <p class="text-slate-600 font-bold text-sm">Bagaimana jika hanya diberikan dua titik koordinat tanpa diberi tahu gradien kemiringannya?</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-amber-50 border border-amber-200 p-4 rounded-2xl text-center">
+                <span class="w-8 h-8 bg-amber-500 text-white rounded-full flex items-center justify-center font-black mx-auto text-sm mb-2">1</span>
+                <h4 class="font-extrabold text-amber-950 text-sm">Cari Gradien (m)</h4>
+                <p class="text-xs text-slate-600 mt-1 font-semibold">Gunakan dua titik koordinat tersebut untuk mencari kemiringan (m) terlebih dahulu.</p>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 p-4 rounded-2xl text-center">
+                <span class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-black mx-auto text-sm mb-2">2</span>
+                <h4 class="font-extrabold text-blue-950 text-sm">Pilih Satu Titik</h4>
+                <p class="text-xs text-slate-600 mt-1 font-semibold">Pilih salah satu dari titik tersebut bebas (boleh titik pertama atau kedua) untuk dijadikan acuan.</p>
+            </div>
+
+            <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl text-center">
+                <span class="w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center font-black mx-auto text-sm mb-2">3</span>
+                <h4 class="font-extrabold text-emerald-950 text-sm">Gunakan Cetakan PGL</h4>
+                <p class="text-xs text-slate-600 mt-1 font-semibold">Masukkan hasil m dan titik pilihanmu ke rumus y - y₁ = m(x - x₁).</p>
+            </div>
+        </div>
+
+        <div class="bg-slate-50 border border-slate-200 p-4 rounded-2xl">
+            <h3 class="font-extrabold text-sm text-slate-800 mb-2">Contoh Soal: Garis melalui titik (1, 2) dan (3, 8)</h3>
+            <div id="s8-detailed-steps" class="hidden text-xs font-bold space-y-2 bg-white p-3 rounded-xl border border-slate-200">
+                <p class="text-indigo-700">Langkah 1: Menghitung gradien m</p>
+                <p class="ml-4 text-slate-600">m = (8 - 2) / (3 - 1) = 6 / 2 = 3</p>
+                <p class="text-indigo-700">Langkah 2: Gunakan titik (1, 2) dan m = 3</p>
+                <p class="ml-4 text-slate-600">y - 2 = 3(x - 1)</p>
+                <p class="ml-4 text-slate-600">y - 2 = 3x - 3</p>
+                <p class="ml-4 text-slate-600">y = 3x - 3 + 2</p>
+                <p class="text-emerald-600 font-extrabold ml-4">Maka didapat: y = 3x - 1 ⭐</p>
+            </div>
+            <button onclick="toggleAnswer('s8-detailed-steps')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs py-2 rounded-xl transition-all">
+                Tampilkan Pembahasan Detail
+            </button>
+        </div>
+    </section>
+
+    <!-- SLIDE 9: GARIS SEJAJAR (m₁ = m₂) -->
+    <section id="slide-8" class="slide-container hidden w-full bg-white rounded-3xl shadow-xl border-4 border-indigo-500 p-6 md:p-10 space-y-6">
+        <div class="flex items-center gap-3">
+            <span class="bg-indigo-100 text-indigo-700 font-black text-xs px-3.5 py-1.5 rounded-full uppercase">Hubungan Garis - Slide 9</span>
+            <h2 class="text-2xl md:text-3xl font-black text-indigo-950">Dua Garis yang Sejajar (m₁ = m₂)</h2>
+        </div>
+        <p class="text-slate-600 font-bold text-sm">Garis sejajar adalah dua garis lurus yang memiliki arah kemiringan yang sama persis sehingga tidak akan pernah bertabrakan.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+            <div class="space-y-4">
+                <div class="bg-indigo-50 border-2 border-indigo-200 p-4 rounded-2xl text-center">
+                    <span class="text-xs text-indigo-800 block font-bold">Syarat Garis Sejajar:</span>
+                    <span class="text-xl md:text-2xl font-black text-indigo-950">m₁ = m₂</span>
+                    <p class="text-[11px] text-slate-500 mt-1 font-bold">Kedua gradien nilainya WAJIB sama.</p>
+                </div>
+
+                <div class="bg-slate-50 border p-4 rounded-2xl text-xs space-y-2">
+                    <h4 class="font-bold text-indigo-950">Contoh Kasus:</h4>
+                    <p class="text-slate-700 leading-relaxed font-bold">
+                        Tentukan persamaan garis sejajar dengan <strong>y = 2x + 5</strong> yang melalui titik <strong>(1, 4)</strong>!
+                    </p>
+                    <div id="s9-solution-step" class="hidden bg-emerald-50/50 p-3 rounded-lg border border-emerald-200 text-slate-700 font-bold space-y-1">
+                        <p>1. Ambil gradien garis awal: m₁ = 2</p>
+                        <p>2. Karena sejajar, gradien baru: m₂ = m₁ = 2</p>
+                        <p>3. Masukkan ke rumus melalui titik (1, 4):</p>
+                        <p class="ml-2">y - 4 = 2(x - 1)</p>
+                        <p class="ml-2">y - 4 = 2x - 2</p>
+                        <p class="ml-2">y = 2x - 2 + 4</p>
+                        <p class="text-indigo-950 font-black">Hasil: y = 2x + 2 ⭐</p>
+                    </div>
+                    <button onclick="toggleAnswer('s9-solution-step')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-2 rounded-xl">Tampilkan Cara Penyelesaian</button>
+                </div>
+            </div>
+
+            <!-- Dynamic SVG canvas showing parallel lines moving dynamically -->
+            <div class="flex flex-col items-center">
+                <span class="text-xs font-bold text-slate-500 mb-2">Ilustrasi Garis Sejajar:</span>
+                <canvas id="parallel-canvas" width="300" height="300" class="cartesian-canvas"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 10: GARIS TEGAK LURUS (m₁ x m₂ = -1) -->
+    <section id="slide-9" class="slide-container hidden w-full bg-white rounded-3xl shadow-xl border-4 border-indigo-500 p-6 md:p-10 space-y-6">
+        <div class="flex items-center gap-3">
+            <span class="bg-indigo-100 text-indigo-700 font-black text-xs px-3.5 py-1.5 rounded-full uppercase">Hubungan Garis - Slide 10</span>
+            <h2 class="text-2xl md:text-3xl font-black text-indigo-950">Dua Garis Tegak Lurus (m₁ × m₂ = -1)</h2>
+        </div>
+        <p class="text-slate-600 font-bold text-sm">Garis tegak lurus adalah dua garis yang saling berpotongan membentuk sudut 90 derajat sempurna (saling menyiku).</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+            <div class="space-y-4">
+                <div class="bg-rose-50 border-2 border-rose-200 p-4 rounded-2xl text-center">
+                    <span class="text-xs text-rose-800 block font-bold">Syarat Garis Tegak Lurus:</span>
+                    <span class="text-xl md:text-2xl font-black text-rose-950">m₁ × m₂ = -1</span>
+                    <p class="text-[11px] text-slate-500 mt-1 font-bold">Atau gunakan trik cerdik: <strong class="text-indigo-600">m₂ = -1 / m₁</strong> (Lawan dan kebalikan!)</p>
+                </div>
+
+                <div class="bg-slate-50 border p-4 rounded-2xl text-xs space-y-2">
+                    <h4 class="font-bold text-indigo-950">Contoh Kasus:</h4>
+                    <p class="text-slate-700 leading-relaxed font-bold">
+                        Tentukan persamaan garis tegak lurus terhadap <strong>y = 4x - 1</strong> yang melalui titik <strong>(2, 3)</strong>!
+                    </p>
+                    <div id="s10-solution-step" class="hidden bg-emerald-50/50 p-3 rounded-lg border border-emerald-200 text-slate-700 font-bold space-y-1">
+                        <p>1. Gradien garis pertama m₁ = 4</p>
+                        <p>2. Karena tegak lurus, m₂ adalah lawan kebalikannya: m₂ = -1 / 4</p>
+                        <p>3. Gunakan rumus y - y₁ = m(x - x₁) dengan titik (2, 3):</p>
+                        <p class="ml-2">y - 3 = -1/4 * (x - 2)</p>
+                        <p class="ml-2">y - 3 = -1/4 x + 1/2</p>
+                        <p class="text-indigo-950 font-black">Hasil akhir: y = -1/4 x + 3.5 ⭐</p>
+                    </div>
+                    <button onclick="toggleAnswer('s10-solution-step')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-2 rounded-xl">Tampilkan Penyelesaian</button>
+                </div>
+            </div>
+
+            <!-- Cartesian plotter showing perpendicular visual coordinate system -->
+            <div class="flex flex-col items-center">
+                <span class="text-xs font-bold text-slate-500 mb-2">Ilustrasi Garis Tegak Lurus (Saling Siku-Siku):</span>
+                <canvas id="perpendicular-canvas" width="300" height="300" class="cartesian-canvas"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 11: INTERSEP-X DAN INTERSEP-Y -->
+    <section id="slide-10" class="slide-container hidden w-full bg-white rounded-3xl shadow-xl border-4 border-indigo-500 p-6 md:p-10 space-y-6">
+        <div class="flex items-center gap-3">
+            <span class="bg-indigo-100 text-indigo-700 font-black text-xs px-3.5 py-1.5 rounded-full uppercase">Sumbu Koordinat - Slide 11</span>
+            <h2 class="text-2xl md:text-3xl font-black text-indigo-950">Intersep Sumbu (Titik Potong Sumbu X & Y)</h2>
+        </div>
+        <p class="text-slate-600 font-bold text-sm">Setiap garis miring pasti akan menabrak / memotong sumbu mendatar (Sumbu X) dan sumbu tegak (Sumbu Y).</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Intersep Y -->
+            <div class="bg-emerald-50 border-2 border-emerald-200 p-5 rounded-2xl flex flex-col justify-between">
+                <div>
+                    <h3 class="font-extrabold text-emerald-950 text-base">🏠 1. Titik Potong Sumbu Y (Intersep-Y)</h3>
+                    <p class="text-xs text-emerald-700 mt-1 font-semibold">Syaratnya: nilai variabel mendatar harus nol, yaitu <strong>x = 0</strong>.</p>
+                </div>
+                <div class="bg-white border rounded-xl p-3 my-3 text-xs font-bold text-slate-700">
+                    <p class="text-indigo-600 font-bold">Misal untuk garis y = 4x - 7 :</p>
+                    <p class="mt-1">Substitusi x = 0 ➔ y = 4(0) - 7</p>
+                    <p class="text-emerald-600">y = -7. Maka koordinat potong Y adalah (0, -7)</p>
+                </div>
+                <p class="text-[11px] text-emerald-800 font-semibold italic">Merupakan tempat garis menabrak garis lurus tegak (Sumbu Y).</p>
+            </div>
+
+            <!-- Intersep X -->
+            <div class="bg-rose-50 border-2 border-rose-200 p-5 rounded-2xl flex flex-col justify-between">
+                <div>
+                    <h3 class="font-extrabold text-rose-950 text-base">🏠 2. Titik Potong Sumbu X (Intersep-X)</h3>
+                    <p class="text-xs text-rose-700 mt-1 font-semibold">Syaratnya: nilai variabel tinggi harus nol, yaitu <strong>y = 0</strong>.</p>
+                </div>
+                <div class="bg-white border rounded-xl p-3 my-3 text-xs font-bold text-slate-700">
+                    <p class="text-indigo-600 font-bold">Misal untuk garis y = 4x - 8 :</p>
+                    <p class="mt-1">Substitusi y = 0 ➔ 0 = 4x - 8</p>
+                    <p>➔ 8 = 4x ➔ x = 2</p>
+                    <p class="text-rose-600">Maka koordinat potong X adalah (2, 0)</p>
+                </div>
+                <p class="text-[11px] text-rose-800 font-semibold italic">Merupakan tempat garis menabrak garis tidur mendatar (Sumbu X).</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 12: TANTANGAN CAMPURAN -->
+    <section id="slide-11" class="slide-container hidden w-full bg-white rounded-3xl shadow-xl border-4 border-indigo-500 p-6 md:p-10 space-y-6 relative">
+        <div class="flex items-center gap-3">
+            <span class="bg-indigo-100 text-indigo-700 font-black text-xs px-3.5 py-1.5 rounded-full uppercase">Evaluasi - Slide 12</span>
+            <h2 class="text-2xl md:text-3xl font-black text-indigo-950">Misi Detektif: Pecahkan Kasus Campuran! 🌟</h2>
+        </div>
+        <p class="text-slate-600 font-bold text-sm">Gunakan strategi matematika cerdas yang baru saja kamu pelajari untuk memilih jawaban yang tepat!</p>
+
+        <!-- Confetti Canvas overlay inside this section -->
+        <canvas id="quiz-confetti" class="absolute inset-0 pointer-events-none w-full h-full rounded-3xl z-30"></canvas>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Task 1 -->
+            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col justify-between space-y-3">
+                <div>
+                    <span class="bg-amber-100 text-amber-700 text-[10px] font-black px-2 py-0.5 rounded uppercase">Kasus 1: Menentukan Gradien</span>
+                    <h4 class="font-extrabold text-sm text-slate-800 mt-2">Berapakah gradien dari persamaan garis <span class="bg-white px-2 py-0.5 rounded border font-black">y = -3x + 2</span>?</h4>
+                </div>
+                <div class="flex gap-2 text-xs">
+                    <button onclick="checkQuizPGL(this, -3)" class="bg-white hover:bg-slate-100 border text-slate-800 font-bold py-2 px-3 rounded-lg flex-1">2</button>
+                    <button onclick="checkQuizPGL(this, -3)" class="bg-white hover:bg-slate-100 border text-slate-800 font-bold py-2 px-3 rounded-lg flex-1">3</button>
+                    <button onclick="checkQuizPGL(this, -3)" class="bg-white hover:bg-slate-100 border text-slate-800 font-bold py-2 px-3 rounded-lg flex-1">-3</button>
+                </div>
+            </div>
+
+            <!-- Task 2 -->
+            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col justify-between space-y-3">
+                <div>
+                    <span class="bg-blue-100 text-blue-700 text-[10px] font-black px-2 py-0.5 rounded uppercase">Kasus 2: Menentukan Intersep-Y</span>
+                    <h4 class="font-extrabold text-sm text-slate-800 mt-2">Tentukan intersep-Y (titik potong sumbu Y) dari persamaan <span class="bg-white px-2 py-0.5 rounded border font-black">y = 4x - 7</span>!</h4>
+                </div>
+                <div class="flex gap-2 text-xs">
+                    <button onclick="checkQuizPGL(this, -7)" class="bg-white hover:bg-slate-100 border text-slate-800 font-bold py-2 px-3 rounded-lg flex-1">(0, 4)</button>
+                    <button onclick="checkQuizPGL(this, -7)" class="bg-white hover:bg-slate-100 border text-slate-800 font-bold py-2 px-3 rounded-lg flex-1">(0, -7)</button>
+                    <button onclick="checkQuizPGL(this, -7)" class="bg-white hover:bg-slate-100 border text-slate-800 font-bold py-2 px-3 rounded-lg flex-1">(0, 7)</button>
+                </div>
+            </div>
+
+            <!-- Task 3 -->
+            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col justify-between space-y-3">
+                <div>
+                    <span class="bg-green-100 text-green-700 text-[10px] font-black px-2 py-0.5 rounded uppercase">Kasus 3: Titik-Gradien</span>
+                    <h4 class="font-extrabold text-sm text-slate-800 mt-2">PGL dengan gradien 3 melalui titik (2,5) menghasilkan persamaan garis apa?</h4>
+                </div>
+                <div class="flex gap-2 text-xs">
+                    <button onclick="checkQuizPGL(this, 'y = 3x - 1')" class="bg-white hover:bg-slate-100 border text-slate-800 font-bold py-2 px-3 rounded-lg flex-1">y = 3x + 1</button>
+                    <button onclick="checkQuizPGL(this, 'y = 3x - 1')" class="bg-white hover:bg-slate-100 border text-slate-800 font-bold py-2 px-3 rounded-lg flex-1">y = 3x - 1</button>
+                    <button onclick="checkQuizPGL(this, 'y = 3x - 1')" class="bg-white hover:bg-slate-100 border text-slate-800 font-bold py-2 px-3 rounded-lg flex-1">y = 2x + 5</button>
+                </div>
+            </div>
+
+            <!-- Task 4 -->
+            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col justify-between space-y-3">
+                <div>
+                    <span class="bg-purple-100 text-purple-700 text-[10px] font-black px-2 py-0.5 rounded uppercase">Kasus 4: Dua Garis Sejajar</span>
+                    <h4 class="font-extrabold text-sm text-slate-800 mt-2">Jika garis g sejajar dengan y = 2x + 5, maka gradien garis g (m_g) adalah ...</h4>
+                </div>
+                <div class="flex gap-2 text-xs">
+                    <button onclick="checkQuizPGL(this, 2)" class="bg-white hover:bg-slate-100 border text-slate-800 font-bold py-2 px-3 rounded-lg flex-1">2</button>
+                    <button onclick="checkQuizPGL(this, 2)" class="bg-white hover:bg-slate-100 border text-slate-800 font-bold py-2 px-3 rounded-lg flex-1">-2</button>
+                    <button onclick="checkQuizPGL(this, 2)" class="bg-white hover:bg-slate-100 border text-slate-800 font-bold py-2 px-3 rounded-lg flex-1">1/2</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 13: EXIT TICKET & KELULUSAN -->
+    <section id="slide-12" class="slide-container hidden w-full bg-gradient-to-br from-indigo-50 to-white rounded-3xl shadow-xl border-4 border-indigo-500 p-6 md:p-10 flex flex-col items-center space-y-6">
+        <div class="inline-block bg-indigo-600 text-white font-black text-xs px-4 py-1.5 rounded-full uppercase tracking-wider animate-bounce shadow-md">
+            🏆 Selesai Belajar! - Slide 13
+        </div>
+        
+        <div class="text-center space-y-2">
+            <h2 class="text-3xl md:text-4xl font-black text-indigo-950 leading-tight">Selamat, Kamu Detektif Hebat! 🎉</h2>
+            <p class="text-xs md:text-sm font-extrabold text-slate-600">Kamu telah menamatkan seluruh materi Persamaan Garis Lurus Kelas 8 SMP.</p>
+        </div>
+
+        <div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch pt-2">
+            
+            <!-- Left: Exit Ticket Interactive Accordion -->
+            <div class="lg:col-span-7 space-y-4">
+                <h3 class="text-sm md:text-base font-black text-slate-800 flex items-center gap-2">
+                    <span>💡</span> Exit Ticket: Tunjukkan Pemahamanmu!
+                </h3>
+
+                <div class="space-y-2">
+                    <!-- Ticket Item 1 -->
+                    <button onclick="revealExitTicket(this)" class="w-full text-left p-3.5 bg-white hover:bg-indigo-50 border-2 border-slate-100 hover:border-indigo-300 rounded-xl shadow-sm transition-all flex items-start gap-3">
+                        <span class="text-lg bg-indigo-100 p-1 rounded-lg">📈</span>
+                        <div>
+                            <h4 class="font-black text-xs md:text-sm text-slate-800">Apa arti sebenarnya dari Gradien?</h4>
+                            <p class="text-xs text-slate-500 font-semibold mt-1 hidden-detail hidden">Gradien adalah angka kemiringan/kecuraman dari sebuah garis lurus.</p>
+                            <span class="text-[9px] text-indigo-600 font-black mt-1 block reveal-tag">Klik untuk buka Jawaban ➔</span>
+                        </div>
+                    </button>
+
+                    <!-- Ticket Item 2 -->
+                    <button onclick="revealExitTicket(this)" class="w-full text-left p-3.5 bg-white hover:bg-indigo-50 border-2 border-slate-100 hover:border-indigo-300 rounded-xl shadow-sm transition-all flex items-start gap-3">
+                        <span class="text-lg bg-indigo-100 p-1 rounded-lg">➡️</span>
+                        <div>
+                            <h4 class="font-black text-xs md:text-sm text-slate-800">Bagaimana syarat dua garis sejajar?</h4>
+                            <p class="text-xs text-slate-500 font-semibold mt-1 hidden-detail hidden">Garis sejajar mempunyai nilai gradien yang sama persis (m₁ = m₂).</p>
+                            <span class="text-[9px] text-indigo-600 font-black mt-1 block reveal-tag">Klik untuk buka Jawaban ➔</span>
+                        </div>
+                    </button>
+
+                    <!-- Ticket Item 3 -->
+                    <button onclick="revealExitTicket(this)" class="w-full text-left p-3.5 bg-white hover:bg-indigo-50 border-2 border-slate-100 hover:border-indigo-300 rounded-xl shadow-sm transition-all flex items-start gap-3">
+                        <span class="text-lg bg-indigo-100 p-1 rounded-lg">📐</span>
+                        <div>
+                            <h4 class="font-black text-xs md:text-sm text-slate-800">Bagaimana syarat garis tegak lurus?</h4>
+                            <p class="text-xs text-slate-500 font-semibold mt-1 hidden-detail hidden">Hasil kali kedua gradiennya bernilai -1 (m₁ × m₂ = -1).</p>
+                            <span class="text-[9px] text-indigo-600 font-black mt-1 block reveal-tag">Klik untuk buka Jawaban ➔</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right: Certificate Creator -->
+            <div class="lg:col-span-5 flex flex-col justify-between bg-white border-2 border-indigo-100 rounded-2xl p-5 shadow-md">
+                <div class="space-y-3">
+                    <div class="space-y-1">
+                        <label class="block text-[10px] font-black text-slate-700 uppercase">✍️ Masukkan Namamu:</label>
+                        <input type="text" id="student-name" oninput="updateCert(this.value)" placeholder="Ketik namamu di sini..." 
+                               class="w-full px-3 py-2 text-xs font-bold border-2 border-slate-200 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors shadow-inner" />
+                    </div>
+
+                    <!-- Beautiful Digital Certificate Display Box -->
+                    <div class="relative bg-amber-50/40 border-4 border-amber-300 rounded-xl p-4 text-center space-y-2 shadow-inner overflow-hidden">
+                        <div class="absolute inset-1.5 border border-amber-200/50 pointer-events-none rounded-lg"></div>
+                        <span class="text-[8px] font-black tracking-widest text-amber-700 block uppercase">Piagam Kelulusan</span>
+                        <h4 class="text-sm font-black text-indigo-900 leading-none">Ahli Persamaan Garis Lurus</h4>
+                        
+                        <div class="py-1 border-y border-dashed border-amber-300/40">
+                            <span class="text-[7px] text-slate-400 block">Diberikan Kepada Siswa Berbakat:</span>
+                            <span id="cert-display-name" class="text-base font-extrabold text-amber-900 block py-0.5">Siswa Berprestasi</span>
+                        </div>
+
+                        <p class="text-[8px] font-bold text-slate-600 leading-relaxed px-1">
+                            Telah berhasil menuntaskan modul gradien, menyusun persamaan garis Kartesius, serta sifat sejajar & tegak lurus secara gemilang!
+                        </p>
+
+                        <div class="flex justify-between items-center px-2 pt-1 text-left">
+                            <div>
+                                <span class="text-[7px] text-slate-400 block">Instruktur</span>
+                                <span class="text-[8px] font-black text-indigo-700">Studio Aljabar 📈</span>
+                            </div>
+                            <div class="w-8 h-8 bg-amber-400 rounded-full flex items-center justify-center text-xs shadow-md border border-white">
+                                ⭐
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-3 mt-3 border-t border-slate-100 flex flex-col gap-1 items-center">
+                    <button onclick="claimCertificateTriumph()" class="w-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-white font-black py-2 px-4 rounded-xl shadow text-xs transition-all transform active:scale-95 text-center flex items-center justify-center gap-1.5">
+                        🏆 Ambil Piagam & Selebrasi! 🌟
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="w-full max-w-6xl mx-auto flex flex-col gap-4 bg-white/95 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-indigo-100 z-10">
+    <!-- Progress Indicator Bar -->
+    <div class="w-full">
+        <div class="flex justify-between text-[11px] font-black text-indigo-900 mb-1">
+            <span>Progress Pembelajaran Kita</span>
+            <span id="slide-num-label">Slide 1 dari 13</span>
+        </div>
+        <div class="w-full h-2.5 bg-indigo-100 rounded-full overflow-hidden">
+            <div id="slide-progress-bar" class="h-full bg-indigo-600 transition-all duration-300" style="width: 7.69%;"></div>
+        </div>
+    </div>
+
+    <!-- Directional Navigation buttons -->
+    <div class="flex justify-between items-center">
+        <button id="btn-prev" onclick="changeSlide(-1)" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold py-2.5 px-5 rounded-xl text-xs transition-all transform active:scale-95 border-2 border-slate-200">
+            ⬅️ Kembali
+        </button>
+        
+        <!-- Quick indicators pills -->
+        <div class="hidden md:flex gap-1.5 select-none" id="slide-pills"></div>
+
+        <button id="btn-next" onclick="changeSlide(1)" class="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-2.5 px-5 rounded-xl text-xs transition-all transform active:scale-95 shadow-md">
+            Lanjut Belajar ➡️
+        </button>
+    </div>
+</footer>
+
+<script>
+    const TOTAL_SLIDES = 13;
+    let currentSlide = 0;
+
+    function initSlides() {
+        const pillContainer = document.getElementById('slide-pills');
+        pillContainer.innerHTML = '';
+        for(let i=0; i<TOTAL_SLIDES; i++) {
+            const pill = document.createElement('button');
+            pill.className = `w-3 h-3 rounded-full transition-all duration-300 ${i === 0 ? 'bg-indigo-600 scale-125' : 'bg-slate-200'}`;
+            pill.onclick = () => goToSlide(i);
+            pillContainer.appendChild(pill);
+        }
+        showSlide(currentSlide);
+    }
+
+    function showSlide(index) {
+        for(let i=0; i<TOTAL_SLIDES; i++) {
+            const section = document.getElementById(`slide-${i}`);
+            if(section) {
+                section.classList.add('hidden');
+                section.classList.remove('flex', 'space-y-6');
+            }
+        }
+
+        const targetSection = document.getElementById(`slide-${index}`);
+        if(targetSection) {
+            targetSection.classList.remove('hidden');
+            if(index === 0 || index === 12) {
+                targetSection.classList.add('flex');
+            } else {
+                targetSection.classList.add('space-y-6');
+            }
+        }
+
+        // Hide Back button on Slide 1
+        document.getElementById('btn-prev').style.visibility = (index === 0) ? 'hidden' : 'visible';
+        document.getElementById('btn-next').innerText = (index === TOTAL_SLIDES - 1) ? 'Ulangi Belajar 🔄' : 'Lanjut Belajar ➡️';
+
+        // Progress Calculations
+        const progressPercent = ((index + 1) / TOTAL_SLIDES) * 100;
+        document.getElementById('slide-progress-bar').style.width = `${progressPercent}%`;
+        document.getElementById('slide-num-label').innerText = `Slide ${index + 1} dari ${TOTAL_SLIDES}`;
+
+        // Color highlighting active indicator pills
+        const pills = document.getElementById('slide-pills').children;
+        for(let i=0; i<pills.length; i++) {
+            if(i === index) {
+                pills[i].className = 'w-3 h-3 rounded-full bg-indigo-600 scale-125 transition-all duration-300';
+            } else {
+                pills[i].className = 'w-3 h-3 rounded-full bg-slate-200 transition-all duration-300 hover:bg-slate-300';
+            }
+        }
+
+        // Trigger dynamic Canvas rendering on entering corresponding slides
+        if (index === 3) {
+            setTimeout(updateLinePlotter, 100);
+        } else if (index === 8) {
+            setTimeout(drawParallelIllustration, 100);
+        } else if (index === 9) {
+            setTimeout(drawPerpendicularIllustration, 100);
+        }
+    }
+
+    function changeSlide(direction) {
+        playSound('slide');
+        currentSlide += direction;
+        if(currentSlide >= TOTAL_SLIDES) {
+            currentSlide = 0; 
+        } else if (currentSlide < 0) {
+            currentSlide = TOTAL_SLIDES - 1;
+        }
+        showSlide(currentSlide);
+    }
+
+    function goToSlide(index) {
+        playSound('slide');
+        currentSlide = index;
+        showSlide(currentSlide);
+    }
+
+    // Touch events for tablet/mobile swipe navigation
+    let touchStartX = 0;
+    let touchEndX = 0;
+    document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+    document.addEventListener('touchend', e => { 
+        touchEndX = e.changedTouches[0].screenX; 
+        if (touchEndX < touchStartX - 60) changeSlide(1);
+        if (touchEndX > touchStartX + 60) changeSlide(-1);
+    });
+
+    // Keyboard support
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'Space') changeSlide(1);
+        else if (e.key === 'ArrowLeft') changeSlide(-1);
+    });
+
+    // Toggle helper
+    function toggleAnswer(elementId) {
+        playSound('click');
+        const element = document.getElementById(elementId);
+        if(element) element.classList.toggle('hidden');
+    }
+</script>
+
+<script>
+    // --- SLIDE 2: DIAGNOSTIC WARM-UP ---
+    function checkWarmUpQ1(btn, correctQuadrant) {
+        const textLabel = document.getElementById('q1-warmup-result');
+        textLabel.classList.remove('hidden');
+        playSound('correct');
+        btn.className = "bg-emerald-500 text-white border-2 border-emerald-300 p-2 rounded-xl font-bold flex justify-between items-center text-xs";
+        btn.innerHTML += "<span>✓</span>";
+        textLabel.innerText = `Luar biasa! Titik koordinat berhasil dipetakan ke Kuadran ${correctQuadrant}!`;
+    }
+
+    function checkPGLIdentify(btn, isPGL) {
+        if(isPGL) {
+            playSound('correct');
+            btn.className = "bg-emerald-500 text-white p-2.5 rounded-xl font-bold text-center text-xs";
+            btn.innerHTML += "<br><span class='text-[10px]'>Betul! PGL ✓</span>";
+        } else {
+            playSound('wrong');
+            btn.className = "bg-rose-500 text-white p-2.5 rounded-xl font-bold text-center text-xs";
+            btn.innerHTML += "<br><span class='text-[10px]'>Salah! Bukan PGL ✗</span>";
+        }
+    }
+
+    // --- SLIDE 3: OJEK ONLINE SLIDER ---
+    function calculateOjek(km) {
+        playSound('click');
+        document.getElementById('ojek-km-label').innerText = `${km} km`;
+        const cost = 10000 + (3000 * km);
+        const formattedCost = "Rp" + cost.toLocaleString('id-ID');
+        document.getElementById('ojek-cost').innerText = formattedCost;
+    }
+</script>
+
+<script>
+    // Utility coordinate mapper for canvas plotting
+    function drawCartesianGrid(canvas, ctx, scale = 15) {
+        const width = canvas.width;
+        const height = canvas.height;
+        ctx.clearRect(0, 0, width, height);
+
+        // Grid Lines
+        ctx.strokeStyle = "#eef2ff";
+        ctx.lineWidth = 1;
+        for (let x = 0; x < width; x += scale) {
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, height);
+            ctx.stroke();
+        }
+        for (let y = 0; y < height; y += scale) {
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(width, y);
+            ctx.stroke();
+        }
+
+        // Axes (X and Y)
+        ctx.strokeStyle = "#94a3b8";
+        ctx.lineWidth = 2;
+        
+        // Sumbu X
+        ctx.beginPath();
+        ctx.moveTo(0, height / 2);
+        ctx.lineTo(width, height / 2);
+        ctx.stroke();
+
+        // Sumbu Y
+        ctx.beginPath();
+        ctx.moveTo(width / 2, 0);
+        ctx.lineTo(width / 2, height);
+        ctx.stroke();
+
+        // Arrow Heads
+        ctx.fillStyle = "#94a3b8";
+        ctx.beginPath();
+        ctx.moveTo(width - 5, height / 2 - 4);
+        ctx.lineTo(width, height / 2);
+        ctx.lineTo(width - 5, height / 2 + 4);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(width / 2 - 4, 5);
+        ctx.lineTo(width / 2, 0);
+        ctx.lineTo(width / 2 + 4, 5);
+        ctx.fill();
+    }
+
+    // Maps real coordinates to Canvas coordinate systems (Scale 1 unit = 15 pixels)
+    function mapCoords(val, canvasDimension, isX = true, scale = 15) {
+        const origin = canvasDimension / 2;
+        if (isX) {
+            return origin + (val * scale);
+        } else {
+            return origin - (val * scale);
+        }
+    }
+
+    // --- SLIDE 4: BAKU PLOTTER y = mx + c ---
+    function updateLinePlotter() {
+        const m = parseFloat(document.getElementById('m-slider').value);
+        const c = parseFloat(document.getElementById('c-slider').value);
+
+        document.getElementById('m-val-label').innerText = m.toFixed(1);
+        document.getElementById('c-val-label').innerText = c.toFixed(0);
+        
+        // Format Equation display
+        let sign = c >= 0 ? "+ " : "- ";
+        let absoluteC = Math.abs(c);
+        document.getElementById('eq-display').innerText = `y = ${m.toFixed(1)}x ${sign} ${absoluteC}`;
+
+        const canvas = document.getElementById('cartesian-canvas-s3');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const scale = 15;
+
+        // Draw basic grid
+        drawCartesianGrid(canvas, ctx, scale);
+
+        // Plot y = mx + c line
+        ctx.strokeStyle = "#4f46e5"; // Indigo line
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+
+        // Calculate points at edges of coordinate plane (-10 to 10)
+        const xStart = -10;
+        const yStart = m * xStart + c;
+        const xEnd = 10;
+        const yEnd = m * xEnd + c;
+
+        ctx.moveTo(mapCoords(xStart, canvas.width, true, scale), mapCoords(yStart, canvas.height, false, scale));
+        ctx.lineTo(mapCoords(xEnd, canvas.width, true, scale), mapCoords(yEnd, canvas.height, false, scale));
+        ctx.stroke();
+
+        // Draw intersection point at Y Axis (0, c)
+        ctx.fillStyle = "#10b981"; // Emerald dot
+        ctx.beginPath();
+        ctx.arc(mapCoords(0, canvas.width, true, scale), mapCoords(c, canvas.height, false, scale), 6, 0, 2 * Math.PI);
+        ctx.fill();
+    }
+</script>
+
+<script>
+    function playAnimationS4(type) {
+        const carUp = document.getElementById('car-up');
+        const carDown = document.getElementById('car-down');
+        const carFlat = document.getElementById('car-flat');
+
+        if (type === 'up') {
+            carUp.style.transform = 'translate(180px, -45px)';
+            setTimeout(() => { carUp.style.transform = 'translate(0, 0)'; }, 1500);
+        } else if (type === 'down') {
+            carDown.style.transform = 'translate(180px, 45px)';
+            setTimeout(() => { carDown.style.transform = 'translate(0, 0)'; }, 1500);
+        } else if (type === 'flat') {
+            carFlat.style.transform = 'translateX(180px)';
+            setTimeout(() => { carFlat.style.transform = 'translateX(0)'; }, 1500);
+        }
+    }
+</script>
+
+<script>
+    // --- SLIDE 9: DRAW PARALLEL LINE ILLUSTRATION ---
+    function drawParallelIllustration() {
+        const canvas = document.getElementById('parallel-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const scale = 15;
+
+        drawCartesianGrid(canvas, ctx, scale);
+
+        // Draw Line 1: y = 2x + 1
+        ctx.strokeStyle = "#4f46e5"; // Indigo line
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(mapCoords(-10, canvas.width, true, scale), mapCoords(2*(-10) + 1, canvas.height, false, scale));
+        ctx.lineTo(mapCoords(10, canvas.width, true, scale), mapCoords(2*(10) + 1, canvas.height, false, scale));
+        ctx.stroke();
+
+        // Draw Line 2: y = 2x - 3 (Parallel)
+        ctx.strokeStyle = "#f43f5e"; // Rose line
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(mapCoords(-10, canvas.width, true, scale), mapCoords(2*(-10) - 3, canvas.height, false, scale));
+        ctx.lineTo(mapCoords(10, canvas.width, true, scale), mapCoords(2*(10) - 3, canvas.height, false, scale));
+        ctx.stroke();
+    }
+
+    // --- SLIDE 10: DRAW PERPENDICULAR LINE ILLUSTRATION ---
+    function drawPerpendicularIllustration() {
+        const canvas = document.getElementById('perpendicular-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const scale = 15;
+
+        drawCartesianGrid(canvas, ctx, scale);
+
+        // Draw Line 1: y = 1.5x + 1
+        ctx.strokeStyle = "#3b82f6"; // Blue Line
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(mapCoords(-10, canvas.width, true, scale), mapCoords(1.5*(-10) + 1, canvas.height, false, scale));
+        ctx.lineTo(mapCoords(10, canvas.width, true, scale), mapCoords(1.5*(10) + 1, canvas.height, false, scale));
+        ctx.stroke();
+
+        // Draw Line 2: y = -0.67x + 1 (Perpendicular, -2/3)
+        ctx.strokeStyle = "#f59e0b"; // Yellow Line
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(mapCoords(-10, canvas.width, true, scale), mapCoords(-0.67*(-10) + 1, canvas.height, false, scale));
+        ctx.lineTo(mapCoords(10, canvas.width, true, scale), mapCoords(-0.67*(10) + 1, canvas.height, false, scale));
+        ctx.stroke();
+
+        // Right angle small square indicator at (0, 1)
+        ctx.fillStyle = "rgba(148, 163, 184, 0.4)";
+        ctx.beginPath();
+        ctx.arc(mapCoords(0, canvas.width, true, scale), mapCoords(1, canvas.height, false, scale), 8, 0, 2*Math.PI);
+        ctx.fill();
+    }
+</script>
+
+<script>
+    // Interactive Multi Choice Quiz Feedback
+    function checkQuizPGL(btn, correctVal) {
+        const value = btn.innerText;
+        const sibs = btn.parentElement.children;
+        
+        // Lock siblings from duplicate taps
+        for(let option of sibs) {
+            option.disabled = true;
+        }
+
+        if (value.includes(correctVal) || value == correctVal) {
+            playSound('correct');
+            btn.className = "bg-emerald-500 text-white font-extrabold py-2 px-3 rounded-lg flex-1 transition-all";
+            startQuizConfetti();
+        } else {
+            playSound('wrong');
+            btn.className = "bg-rose-500 text-white font-extrabold py-2 px-3 rounded-lg flex-1 transition-all";
+            // Reveal the correct option
+            for(let option of sibs) {
+                if(option.innerText.includes(correctVal) || option.innerText == correctVal) {
+                    option.className = "bg-emerald-500 text-white font-extrabold py-2 px-3 rounded-lg flex-1 transition-all";
+                }
+            }
+        }
+    }
+
+    // Confetti effect synthesizer for Quiz Section Success
+    function startQuizConfetti() {
+        const canvas = document.getElementById('quiz-confetti');
+        const ctx = canvas.getContext('2d');
+        canvas.width = canvas.parentElement.clientWidth;
+        canvas.height = canvas.parentElement.clientHeight;
+
+        let particles = [];
+        for (let i = 0; i < 40; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height - canvas.height,
+                r: Math.random() * 4 + 4,
+                d: Math.random() * canvas.height,
+                color: `hsla(${Math.random() * 360}, 100%, 50%, 0.8)`,
+                tilt: Math.random() * 8 - 4,
+                tiltAngleIncremental: Math.random() * 0.05 + 0.02,
+                tiltAngle: 0
+            });
+        }
+
+        let animationId;
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((p, index) => {
+                p.tiltAngle += p.tiltAngleIncremental;
+                p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+                p.tilt = Math.sin(p.tiltAngle) * 10;
+
+                ctx.beginPath();
+                ctx.lineWidth = p.r;
+                ctx.strokeStyle = p.color;
+                ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+                ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+                ctx.stroke();
+
+                if (p.y > canvas.height) {
+                    particles[index] = {
+                        x: Math.random() * canvas.width,
+                        y: -10,
+                        r: p.r,
+                        d: p.d,
+                        color: p.color,
+                        tilt: p.tilt,
+                        tiltAngleIncremental: p.tiltAngleIncremental,
+                        tiltAngle: p.tiltAngle
+                    };
+                }
+            });
+            animationId = requestAnimationFrame(draw);
+        }
+
+        draw();
+        setTimeout(() => {
+            cancelAnimationFrame(animationId);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }, 2000);
+    }
+</script>
+
+<script>
+    function revealExitTicket(cardElement) {
+        playSound('click');
+        const details = cardElement.querySelector('.hidden-detail');
+        const tag = cardElement.querySelector('.reveal-tag');
+        
+        if (details.classList.contains('hidden')) {
+            details.classList.remove('hidden');
+            cardElement.classList.add('border-indigo-400', 'bg-indigo-50/20');
+            tag.innerText = "Ketuk untuk menutup jawaban ↩";
+        } else {
+            details.classList.add('hidden');
+            cardElement.classList.remove('border-indigo-400', 'bg-indigo-50/20');
+            tag.innerText = "Klik untuk buka Jawaban ➔";
+        }
+    }
+
+    function updateCert(nameVal) {
+        const display = document.getElementById('cert-display-name');
+        if (nameVal.trim() === "") {
+            display.innerText = "Siswa Berprestasi";
+        } else {
+            display.innerText = nameVal;
+        }
+    }
+
+    function claimCertificateTriumph() {
+        playSound('triumph');
+        startQuizConfetti();
+        // Trigger extra delayed bursts of triumph confetti
+        setTimeout(startQuizConfetti, 400);
+        setTimeout(startQuizConfetti, 800);
+    }
+
+    // Window Init
+    window.onload = function() {
+        initSlides();
+    };
+</script>
+</body>
+</html>
