@@ -3,735 +3,661 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kuis Interaktif Persamaan Garis Lurus</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Misi Duel Detektif PGL - Anin vs Rafa</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts Poppins & Lato -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2 family=Lato:wght@400;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome Icons -->
+    <!-- KaTeX CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
         body {
-            font-family: 'Lato', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b132b;
+            color: #f4f5f6;
         }
-        .font-poppins {
-            font-family: 'Poppins', sans-serif;
-        }
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
+        .monospace {
+            font-family: 'JetBrains Mono', monospace;
         }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen text-slate-800">
+<body class="min-h-screen flex flex-col justify-between">
 
-    <!-- CONTAINER UTAMA -->
-    <div class="max-w-7xl mx-auto px-4 py-6 md:py-10">
-        
-        <!-- HEADER DASHBOARD -->
-        <header class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center text-white text-xl shadow-md shadow-indigo-100">
-                    <i class="fa-solid fa-chart-line"></i>
+    <!-- HEADER NAVIGATION -->
+    <header class="bg-slate-950 border-b border-slate-800 py-4 px-6 sticky top-0 z-50 shadow-xl">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-gradient-to-tr from-blue-600 to-indigo-600 p-2.5 rounded-xl shadow-lg shadow-blue-500/30">
+                    <i class="fa-solid fa-user-secret text-2xl text-white"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold font-poppins text-slate-900">Evaluasi Mandiri</h1>
-                    <p class="text-xs md:text-sm text-slate-500 font-medium font-poppins">Persamaan Garis Lurus (PGL) — Kelas VIII</p>
+                    <h1 class="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                        MISI DUEL DETEKTIF PGL
+                        <span class="text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-0.5 rounded-full font-bold">Anin vs Rafa</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Kompetisi Penguasaan Persamaan Garis Lurus</p>
                 </div>
             </div>
 
-            <!-- Total Score Badge -->
-            <div class="bg-indigo-50 border border-indigo-100 px-4 py-2 rounded-xl flex items-center gap-2">
-                <i class="fa-solid fa-star text-amber-500"></i>
-                <span class="text-sm font-bold font-poppins text-indigo-900" id="global-badge-score">Skor: 0 / 10</span>
+            <!-- VS Real-time Scoreboard -->
+            <div class="flex items-center space-x-6 bg-slate-900 border border-slate-800 px-5 py-2.5 rounded-2xl shadow-inner">
+                <div class="text-center">
+                    <span class="block text-[10px] text-pink-400 font-extrabold uppercase">Anin</span>
+                    <span id="vs-score-anin" class="text-lg font-black text-white font-mono">0 / 25</span>
+                </div>
+                <div class="text-xs text-slate-500 font-extrabold uppercase select-none tracking-widest bg-slate-950 px-2.5 py-1 rounded-full border border-slate-800">VS</div>
+                <div class="text-center">
+                    <span class="block text-[10px] text-cyan-400 font-extrabold uppercase">Rafa</span>
+                    <span id="vs-score-rafa" class="text-lg font-black text-white font-mono">0 / 25</span>
+                </div>
             </div>
-        </header>
+        </div>
+    </header>
 
-        <!-- MAIN LAYOUT (KIRI: SOAL & KANAN: PANEL NAVIGASI) -->
-        <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- MAIN APP WRAPPER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- SIDE PANEL: TRACKER & UTILITIES -->
+        <section class="lg:col-span-4 space-y-6 flex flex-col justify-start">
             
-            <!-- SEBELAH KIRI: KARTU SOAL & OPSI JAWABAN -->
-            <div class="lg:col-span-2 flex flex-col gap-6">
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 md:p-8 relative overflow-hidden transition-all duration-300 min-h-[400px] flex flex-col justify-between">
-                    
-                    <div>
-                        <!-- Info Bar Atas Soal -->
-                        <div class="flex justify-between items-center border-b border-slate-100 pb-4 mb-6">
-                            <div>
-                                <span class="text-xs font-bold text-indigo-600 tracking-wider uppercase font-poppins" id="info-nomor-soal">SOAL 1 DARI 10</span>
-                                <span class="ml-3 px-2.5 py-0.5 bg-indigo-50 text-indigo-700 text-[10px] font-bold rounded-full font-poppins">TIPE MANDIRI</span>
-                            </div>
-                            <span class="text-xs font-semibold text-slate-400 bg-slate-50 px-3 py-1 rounded-full flex items-center gap-1 font-poppins">
-                                <i class="fa-solid fa-tag text-slate-300"></i> Topik: <span id="info-topik">Gradien & Garis</span>
-                            </span>
-                        </div>
-
-                        <!-- Pertanyaan Utama -->
-                        <h2 class="text-base md:text-lg font-bold font-poppins text-slate-900 leading-relaxed mb-6" id="teks-pertanyaan">
-                            Memuat pertanyaan...
-                        </h2>
-
-                        <!-- Opsi Jawaban (Pilihan Ganda) -->
-                        <div class="grid grid-cols-1 gap-3.5 mb-8" id="container-opsi">
-                            <!-- Dinamis disisipkan via JS -->
-                        </div>
-                    </div>
-
-                    <!-- Tombol Aksi Bawah -->
-                    <div class="flex items-center justify-between border-t border-slate-100 pt-6 mt-4">
-                        <button onclick="lewatiSoal()" id="btn-lewati" class="px-5 py-2.5 text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors duration-200 font-poppins">
-                            Lewati Soal
-                        </button>
-                        <button onclick="periksaJawaban()" id="btn-periksa" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold font-poppins rounded-xl transition-all duration-200 shadow-md shadow-indigo-100 flex items-center gap-2">
-                            Periksa Jawaban <i class="fa-solid fa-circle-check"></i>
-                        </button>
-                    </div>
-
+            <!-- SWITCH ACTIVE DETECTIVE TAB -->
+            <div class="bg-slate-950 border border-slate-800/85 p-4 rounded-3xl space-y-3 shadow-lg">
+                <h3 class="text-xs font-extrabold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-blue-500"></i> Pilih Detektif Aktif:
+                </h3>
+                <div class="grid grid-cols-2 gap-2">
+                    <button id="tab-btn-anin" onclick="switchActiveTab('anin')" class="py-3 px-4 rounded-xl border font-bold text-sm transition-all flex flex-col items-center gap-1 bg-pink-500/10 border-pink-500/40 text-pink-400 shadow-lg shadow-pink-500/5">
+                        <i class="fa-solid fa-user-ninja text-lg"></i>
+                        <span>Tab A: Anin</span>
+                    </button>
+                    <button id="tab-btn-rafa" onclick="switchActiveTab('rafa')" class="py-3 px-4 rounded-xl border font-bold text-sm transition-all flex flex-col items-center gap-1 bg-slate-900 border-slate-800 text-slate-400">
+                        <i class="fa-solid fa-user-astronaut text-lg"></i>
+                        <span>Tab B: Rafa</span>
+                    </button>
                 </div>
-
-                <!-- BOX PENJELASAN (AKAN MUNCUL SETELAH CLICK PERIKSA JAWABAN) -->
-                <div id="box-pembahasan" class="hidden bg-emerald-50 border border-emerald-200 rounded-2xl p-6 md:p-8 shadow-sm transition-all duration-300">
-                    <div class="flex items-start gap-4">
-                        <div id="pembahasan-icon" class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-lg shrink-0">
-                            <i class="fa-solid fa-circle-info"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 id="pembahasan-judul" class="text-base font-bold font-poppins text-slate-900 mb-2">Langkah Penyelesaian</h3>
-                            <div id="pembahasan-teks" class="text-sm md:text-base text-slate-600 space-y-4 leading-relaxed font-poppins">
-                                <!-- Penjelasan super jelas disisipkan disini -->
-                            </div>
-                            <div class="mt-6 flex justify-end">
-                                <button onclick="nextSoal()" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold rounded-xl flex items-center gap-2 transition-colors duration-200 shadow font-poppins">
-                                    Lanjut ke Soal Berikutnya <i class="fa-solid fa-arrow-right"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
 
-            <!-- SEBELAH KANAN: PANEL NAVIGASI ANGKA (PERSIS SCREENSHOT) -->
-            <div class="flex flex-col gap-6">
-                
-                <!-- Navigasi Panel Card -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
-                    <h3 class="text-base font-bold font-poppins text-slate-900 mb-5 pb-3 border-b border-slate-100 flex items-center gap-2">
-                        <i class="fa-solid fa-compass text-indigo-500"></i> Navigasi Soal
+            <!-- CURRENT DETECTIVE STATS -->
+            <div class="bg-slate-950 border border-slate-800/85 p-5 rounded-3xl space-y-4 shadow-lg">
+                <div class="flex justify-between items-center border-b border-slate-900 pb-3">
+                    <h3 class="text-xs font-extrabold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                        <i class="fa-solid fa-chart-simple text-blue-500"></i> Status Detektif Aktif:
                     </h3>
-                    
-                    <!-- Grid Angka 1-10 -->
-                    <div class="grid grid-cols-5 gap-3 mb-6" id="grid-navigasi">
-                        <!-- Dinamis tombol 1 - 10 disisipkan via JS -->
+                    <span id="active-det-badge" class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-pink-500/10 text-pink-400 border border-pink-500/20">Anin</span>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-3 text-center">
+                    <div class="bg-slate-900/60 p-3 rounded-2xl border border-slate-800/60">
+                        <span class="block text-[10px] text-slate-500 font-extrabold uppercase">Misi Terjawab</span>
+                        <span id="stat-solved" class="text-xl font-bold text-slate-200 font-mono">0 / 25</span>
                     </div>
-
-                    <!-- Indikator Keterangan Warna -->
-                    <div class="border-t border-slate-100 pt-5 space-y-3">
-                        <div class="flex items-center justify-between text-xs text-slate-500 font-poppins">
-                            <span class="flex items-center gap-2"><span class="w-3.5 h-3.5 bg-indigo-600 rounded-md border border-indigo-200"></span> Sedang Aktif</span>
-                            <span class="flex items-center gap-2"><span class="w-3.5 h-3.5 bg-emerald-500 rounded-md"></span> Benar</span>
-                        </div>
-                        <div class="flex items-center justify-between text-xs text-slate-500 font-poppins">
-                            <span class="flex items-center gap-2"><span class="w-3.5 h-3.5 bg-rose-500 rounded-md"></span> Salah</span>
-                            <span class="flex items-center gap-2"><span class="w-3.5 h-3.5 bg-slate-100 rounded-md border border-slate-200"></span> Belum Selesai</span>
-                        </div>
+                    <div class="bg-slate-900/60 p-3 rounded-2xl border border-slate-800/60">
+                        <span class="block text-[10px] text-slate-500 font-extrabold uppercase">Akurasi Skor</span>
+                        <span id="stat-accuracy" class="text-xl font-bold text-emerald-400 font-mono">0%</span>
                     </div>
                 </div>
 
-                <!-- Live Score Card -->
-                <div class="bg-gradient-to-br from-indigo-950 to-slate-900 rounded-2xl text-white p-6 shadow-xl relative overflow-hidden">
-                    <div class="absolute -right-10 -bottom-10 opacity-10 text-[140px] font-bold select-none pointer-events-none font-poppins">
-                        =
+                <!-- Live Progress Bar -->
+                <div>
+                    <div class="flex justify-between text-[11px] font-bold text-slate-400 mb-1.5">
+                        <span>Progres Analisis Kasus:</span>
+                        <span id="stat-progress-text">0%</span>
                     </div>
-                    <h3 class="text-sm font-semibold text-indigo-200 font-poppins uppercase tracking-wider mb-4">Kemajuan Latihan</h3>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-white/10 p-4 rounded-xl backdrop-blur-sm">
-                            <span class="text-xs text-indigo-200 block mb-1">Kemajuan Kuis</span>
-                            <span class="text-2xl font-bold font-poppins" id="score-progres">0/10</span>
-                            <span class="text-[10px] text-slate-300 block mt-1">soal selesai</span>
-                        </div>
-                        <div class="bg-white/10 p-4 rounded-xl backdrop-blur-sm">
-                            <span class="text-xs text-indigo-200 block mb-1">Jawaban Benar</span>
-                            <span class="text-2xl font-bold font-poppins text-emerald-400" id="score-benar">0</span>
-                            <span class="text-[10px] text-slate-300 block mt-1 font-poppins">benar</span>
-                        </div>
+                    <div class="w-full bg-slate-900 border border-slate-800 h-2.5 rounded-full overflow-hidden">
+                        <div id="stat-progress-bar" class="bg-gradient-to-r from-blue-500 to-indigo-500 h-full transition-all duration-300" style="width: 0%"></div>
                     </div>
                 </div>
-
             </div>
 
-        </main>
+            <!-- QUESTION MAP/GRID -->
+            <div class="bg-slate-950 border border-slate-800/85 p-5 rounded-3xl space-y-4 shadow-lg flex-1">
+                <h3 class="text-xs font-extrabold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
+                    <i class="fa-solid fa-map-location-dot text-blue-500"></i> Peta Misi (25 Soal):
+                </h3>
+                
+                <!-- Medium Section -->
+                <div>
+                    <span class="text-[10px] font-extrabold text-amber-500 uppercase tracking-wider mb-2 block">Misi Medium (1 - 15)</span>
+                    <div class="grid grid-cols-5 gap-2" id="grid-medium">
+                        <!-- JS renders button 1-15 -->
+                    </div>
+                </div>
 
-    </div>
+                <!-- Hard Section -->
+                <div>
+                    <span class="text-[10px] font-extrabold text-rose-500 uppercase tracking-wider mb-2 block">Misi Hard (16 - 25)</span>
+                    <div class="grid grid-cols-5 gap-2" id="grid-hard">
+                        <!-- JS renders button 16-25 -->
+                    </div>
+                </div>
+            </div>
 
-    <!-- DATASET 10 SOAL MANDIRI DAN PENJELASAN UNICODE -->
+        </section>
+
+        <!-- MAIN WORKSPACE: QUIZ BOARD -->
+        <section class="lg:col-span-8 bg-slate-950 border border-slate-800 rounded-3xl p-6 md:p-8 flex flex-col justify-between shadow-2xl relative min-h-[550px]">
+            
+            <!-- WATERMARK BADGE -->
+            <div class="absolute top-6 right-8 text-xs font-black uppercase font-mono py-1 px-3 rounded-full border opacity-20" id="board-bg-badge">
+                ANIN WORKSPACE
+            </div>
+
+            <!-- Active Question Panel -->
+            <div id="quiz-board-content" class="space-y-6">
+                <!-- Header of Question -->
+                <div class="border-b border-slate-900 pb-4">
+                    <span id="q-difficulty" class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20">MEDIUM CASE</span>
+                    <h2 class="text-xl font-extrabold text-white mt-2 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-question text-blue-500"></i> Kasus <span id="q-number-display">1</span>:
+                    </h2>
+                </div>
+
+                <!-- Question Text -->
+                <div class="bg-slate-900/40 p-5 rounded-2xl border border-slate-800/80 leading-relaxed text-slate-200 text-sm md:text-base">
+                    <p id="q-text-body"></p>
+                </div>
+
+                <!-- Options -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="q-options-container">
+                    <!-- Dynamic rendering of 4 options -->
+                </div>
+
+                <!-- Solution & Rationale Box (Hidden until answered) -->
+                <div id="solution-box" class="hidden bg-slate-900/90 border border-slate-800 rounded-2xl p-5 space-y-2 text-xs md:text-sm animate-fade-in">
+                    <h4 class="font-bold text-white flex items-center gap-1.5" id="solution-title">
+                        <i class="fa-solid fa-circle-info text-blue-400"></i> Pembahasan Analisis:
+                    </h4>
+                    <p id="solution-text" class="text-slate-300 leading-relaxed"></p>
+                </div>
+            </div>
+
+            <!-- QUIZ BOTTOM FOOTER NAVIGATION -->
+            <div class="border-t border-slate-900 pt-6 mt-8 flex items-center justify-between">
+                <button onclick="navigateQuestion(-1)" id="btn-prev-q" class="py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-850 text-slate-300 border border-slate-800 hover:border-slate-700 transition-all text-xs font-bold flex items-center gap-1.5 disabled:opacity-30 disabled:pointer-events-none">
+                    <i class="fa-solid fa-circle-chevron-left"></i> Kasus Sebelumnya
+                </button>
+                <div class="text-xs font-bold text-slate-400 font-mono bg-slate-900/60 border border-slate-850 px-4 py-2 rounded-full shadow-inner">
+                    Detektif: <span id="foot-active-det" class="text-pink-400 font-extrabold">Anin</span>
+                </div>
+                <button onclick="navigateQuestion(1)" id="btn-next-q" class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white border border-blue-500/20 transition-all text-xs font-bold flex items-center gap-1.5">
+                    Kasus Berikutnya <i class="fa-solid fa-circle-chevron-right"></i>
+                </button>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER LICENSE -->
+    <footer class="bg-slate-950 py-4 border-t border-slate-900 text-center text-xs text-slate-500 font-medium mt-6">
+        <p>© 2026 Algonova Academy - Modul Kompetisi Garis Lurus Interaktif</p>
+    </footer>
+
+    <!-- MAIN APP JAVASCRIPT ENGINE -->
     <script>
-        const questionsData = [
+        // 25 Questions pool (15 Medium, 10 Hard)
+        const QUESTIONS = [
+            // --- MEDIUM QUESTIONS (1 - 15) ---
             {
-                number: 1,
-                topic: "Menentukan Gradien",
-                question: "Tentukan gradien garis yang melalui titik (2, 5) dan (4, 9).",
-                options: [
-                    { id: 'A', text: "m = 1" },
-                    { id: 'B', text: "m = 2" },
-                    { id: 'C', text: "m = 3" },
-                    { id: 'D', text: "m = 4" }
-                ],
-                correct: 'B',
-                explanation: `
-                <div class="space-y-4">
-                    <p class="font-semibold text-slate-800">Mari pelajari cara menghitung gradien dua titik secara perlahan! ✨</p>
-                    <div class="p-4 bg-white rounded-xl border border-slate-100 shadow-sm space-y-2">
-                        <p class="text-sm font-semibold text-indigo-600"><i class="fa-solid fa-lightbulb"></i> Rumus Gradien (m):</p>
-                        <p class="text-xs text-slate-600 font-bold">m = (y₂ − y₁) / (x₂ − x₁)</p>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 h-5 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-xs font-bold">1</span>
-                            <p class="text-sm"><strong>Tentukan nilai koordinat:</strong></p>
-                        </div>
-                        <p class="text-xs pl-7 bg-slate-50 p-2 rounded-lg text-slate-600">Titik kesatu (x₁, y₁) = (2, 5)<br>Titik kedua (x₂, y₂) = (4, 9)</p>
-                        
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 h-5 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-xs font-bold">2</span>
-                            <p class="text-sm"><strong>Masukkan angka ke dalam rumus:</strong></p>
-                        </div>
-                        <p class="text-xs pl-7 bg-slate-50 p-2 rounded-lg text-slate-600">
-                            m = (9 − 5) / (4 − 2)<br>
-                            m = 4 / 2 = <strong>2</strong> (Jawaban B)
-                        </p>
-                    </div>
-                </div>`
+                id: 1,
+                difficulty: 'medium',
+                text: "Tentukan gradien ($m$) dari persamaan garis eksplisit berikut:\n$$y = 3x - 5$$",
+                options: ["$m = -5$", "$m = 3$", "$m = -3$", "$m = \\frac{3}{5}$"],
+                correctIndex: 1,
+                rationale: "Pada bentuk eksplisit $y = mx + c$, gradien adalah koefisien variabel $x$. Dari persamaan $y = 3x - 5$, koefisien $x$ bernilai $3$."
             },
             {
-                number: 2,
-                topic: "Menentukan Persamaan Garis",
-                question: "Tentukan persamaan garis yang memiliki gradien 4 dan melalui titik (0, −3).",
-                options: [
-                    { id: 'A', text: "y = 4x + 3" },
-                    { id: 'B', text: "y = 4x − 3" },
-                    { id: 'C', text: "y = −3x + 4" },
-                    { id: 'D', text: "y = −3x − 4" }
-                ],
-                correct: 'B',
-                explanation: `
-                <div class="space-y-4">
-                    <p class="font-semibold text-slate-800">Menyusun Persamaan Garis y = mx + c: 💡</p>
-                    <div class="space-y-3">
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 h-5 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-xs font-bold">1</span>
-                            <p class="text-sm"><strong>Pahami unsur yang diketahui:</strong></p>
-                        </div>
-                        <p class="text-xs pl-7 bg-slate-50 p-2 rounded-lg text-slate-600">
-                            Gradien (m) = 4 <br>
-                            Titik potong sumbu-Y di (0, −3) yang berarti nilai konstanta (c) = −3.
-                        </p>
-                        
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 h-5 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-xs font-bold">2</span>
-                            <p class="text-sm"><strong>Masukkan langsung ke rumus umum:</strong></p>
-                        </div>
-                        <p class="text-xs pl-7 bg-slate-50 p-2 rounded-lg text-slate-600 font-bold text-indigo-800">
-                            y = mx + c <br>
-                            y = 4x − 3 (Jawaban B)
-                        </p>
-                    </div>
-                </div>`
+                id: 2,
+                difficulty: 'medium',
+                text: "Sebuah garis lurus melalui titik koordinat $A(1, 2)$ dan $B(3, 6)$. Berapakah gradien garis tersebut?",
+                options: ["$m = 1$", "$m = 2$", "$m = 3$", "$m = 4$"],
+                correctIndex: 1,
+                rationale: "Gunakan rumus gradien dua titik: $$m = \\frac{y_2 - y_1}{x_2 - x_1} = \\frac{6 - 2}{3 - 1} = \\frac{4}{2} = 2$$"
             },
             {
-                number: 3,
-                topic: "Mengubah Bentuk Persamaan",
-                question: "Ubahlah persamaan 3x + y = 6 ke dalam bentuk y = mx + c.",
-                options: [
-                    { id: 'A', text: "y = 3x + 6" },
-                    { id: 'B', text: "y = −3x + 6" },
-                    { id: 'C', text: "y = −3x − 6" },
-                    { id: 'D', text: "y = 3x − 6" }
-                ],
-                correct: 'B',
-                explanation: `
-                <div class="space-y-4">
-                    <p class="font-semibold text-slate-800">Langkah mudah memindahkan suku (Aljabar): ⚙️</p>
-                    <div class="space-y-3">
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 h-5 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-xs font-bold">1</span>
-                            <p class="text-sm"><strong>Posisikan variabel y sendirian di sisi kiri:</strong></p>
-                        </div>
-                        <p class="text-xs pl-7 bg-slate-50 p-2 rounded-lg text-slate-600">
-                            Persamaan asal: 3x + y = 6
-                        </p>
-                        
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 h-5 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-xs font-bold">2</span>
-                            <p class="text-sm"><strong>Pindahkan suku 3x ke sisi kanan:</strong></p>
-                        </div>
-                        <p class="text-xs pl-7 bg-slate-50 p-2 rounded-lg text-slate-600">
-                            Saat pindah ruas melewati tanda sama dengan (=), nilai positif 3x berubah tanda menjadi negatif (−3x).<br>
-                            Sehingga didapatkan bentuk: <strong>y = −3x + 6</strong> (Jawaban B)
-                        </p>
-                    </div>
-                </div>`
+                id: 3,
+                difficulty: 'medium',
+                text: "Berapakah gradien dari persamaan garis implisit berikut:\n$$2x + y = 6$$",
+                options: ["$m = 2$", "$m = -2$", "$m = 6$", "$m = -6$"],
+                correctIndex: 1,
+                rationale: "Ubah ke bentuk eksplisit $y = mx + c \\rightarrow y = -2x + 6$. Maka koefisien $x$ (gradien) adalah $-2$."
             },
             {
-                number: 4,
-                topic: "Bentuk Garis Istimewa",
-                question: "Sebuah garis melalui titik (1, 2) dan (3, 2). Berapakah gradiennya dan apa bentuk garis tersebut?",
-                options: [
-                    { id: 'A', text: "m = 0, garis horizontal" },
-                    { id: 'B', text: "m = tidak terdefinisi, garis vertikal" },
-                    { id: 'C', text: "m = 1, garis miring ke kanan" },
-                    { id: 'D', text: "m = 2, garis miring ke atas" }
-                ],
-                correct: 'A',
-                explanation: `
-                <div class="space-y-4">
-                    <p class="font-semibold text-slate-800">Memahami bentuk garis mendatar (horizontal): 📊</p>
-                    <div class="space-y-3">
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 h-5 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-xs font-bold">1</span>
-                            <p class="text-sm"><strong>Hitung gradiennya terlebih dahulu:</strong></p>
-                        </div>
-                        <p class="text-xs pl-7 bg-slate-50 p-2 rounded-lg text-slate-600">
-                            Titik: (1, 2) dan (3, 2)<br>
-                            m = (2 − 2) / (3 − 1)<br>
-                            m = 0 / 2 = <strong>0</strong>
-                        </p>
-                        
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 h-5 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-xs font-bold">2</span>
-                            <p class="text-sm"><strong>Arti dari gradien bernilai nol (0):</strong></p>
-                        </div>
-                        <p class="text-xs pl-7 bg-slate-50 p-2 rounded-lg text-slate-600">
-                            Karena nilai y di kedua titik sama-sama 2, garis ini sejajar dengan sumbu x. <br>
-                            Bentuk garis ini adalah <strong>horizontal (datar)</strong> dengan persamaan y = 2. (Jawaban A)
-                        </p>
-                    </div>
-                </div>`
+                id: 4,
+                difficulty: 'medium',
+                text: "Carilah persamaan garis yang melalui titik $(0, 5)$ dengan gradien sebesar $-2$!",
+                options: ["$y = -2x - 5$", "$y = 2x + 5$", "$y = -2x + 5$", "$y = -2x + 0$"],
+                correctIndex: 2,
+                rationale: "Gunakan rumus titik-gradien: $y - y_1 = m(x - x_1) \\rightarrow y - 5 = -2(x - 0) \\rightarrow y = -2x + 5$."
             },
             {
-                number: 5,
-                topic: "Menghitung PGL Lengkap",
-                question: "Tentukan persamaan garis yang melalui titik (−2, 4) dan (1, 10).",
-                options: [
-                    { id: 'A', text: "y = 2x + 4" },
-                    { id: 'B', text: "y = 2x + 6" },
-                    { id: 'C', text: "y = 2x + 8" },
-                    { id: 'D', text: "y = 3x + 10" }
-                ],
-                correct: 'C',
-                explanation: `
-                <div class="space-y-4">
-                    <p class="font-semibold text-slate-800">Langkah runtut pengerjaan dua titik: 🛠️</p>
-                    <div class="space-y-3">
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 h-5 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-xs font-bold">1</span>
-                            <p class="text-sm"><strong>Hitung gradien (m):</strong></p>
-                        </div>
-                        <p class="text-xs pl-7 bg-slate-50 p-2 rounded-lg text-slate-600">
-                            m = (10 − 4) / (1 − (−2))<br>
-                            m = 6 / (1 + 2) = 6 / 3 = <strong>2</strong>
-                        </p>
+                id: 5,
+                difficulty: 'medium',
+                text: "Tentukan titik potong garis $y = 3x - 12$ terhadap sumbu X!",
+                options: ["$(4, 0)$", "$(0, -12)$", "$(3, 0)$", "$(-4, 0)$"],
+                correctIndex: 0,
+                rationale: "Titik potong sumbu-X terjadi saat $y = 0 \\rightarrow 0 = 3x - 12 \\rightarrow 3x = 12 \\rightarrow x = 4$. Jadi titiknya adalah $(4, 0)$."
+            },
+            {
+                id: 6,
+                difficulty: 'medium',
+                text: "Tentukan titik potong garis $2x - 3y = 6$ terhadap sumbu Y!",
+                options: ["$(3, 0)$", "$(0, -2)$", "$(0, 2)$", "$(-3, 0)$"],
+                correctIndex: 1,
+                rationale: "Titik potong sumbu-Y terjadi saat $x = 0 \\rightarrow 2(0) - 3y = 6 \\rightarrow -3y = 6 \\rightarrow y = -2$. Jadi titiknya adalah $(0, -2)$."
+            },
+            {
+                id: 7,
+                difficulty: 'medium',
+                text: "Tentukan gradien garis yang sejajar dengan persamaan garis berikut:\n$$y = -4x + 7$$",
+                options: ["$m = 4$", "$m = -4$", "$m = \\frac{1}{4}$", "$m = -\\frac{1}{4}$"],
+                correctIndex: 1,
+                rationale: "Dua garis sejajar jika memiliki gradien sama ($m_1 = m_2$). Gradien garis referensi adalah $-4$, maka gradien garis sejajarnya juga $-4$."
+            },
+            {
+                id: 8,
+                difficulty: 'medium',
+                text: "Berapakah gradien dari garis yang tegak lurus terhadap persamaan garis berikut:\n$$y = \\frac{1}{3}x - 2$$",
+                options: ["$m = \\frac{1}{3}$", "$m = -3$", "$m = 3$", "$m = -\\frac{1}{3}$"],
+                correctIndex: 1,
+                rationale: "Dua garis tegak lurus memiliki hubungan gradien $m_1 \\cdot m_2 = -1$. Karena $m_1 = \\frac{1}{3}$, maka $\\frac{1}{3} \\cdot m_2 = -1 \\rightarrow m_2 = -3$."
+            },
+            {
+                id: 9,
+                difficulty: 'medium',
+                text: "Cari persamaan garis lurus yang melewati titik koordinat $(2, 3)$ dengan gradien $4$!",
+                options: ["$y = 4x - 5$", "$y = 4x + 5$", "$y = -4x + 11$", "$y = 4x - 3$"],
+                correctIndex: 0,
+                rationale: "Gunakan rumus $y - y_1 = m(x - x_1) \\rightarrow y - 3 = 4(x - 2) \\rightarrow y - 3 = 4x - 8 \\rightarrow y = 4x - 5$."
+            },
+            {
+                id: 10,
+                difficulty: 'medium',
+                text: "Tentukan gradien dari persamaan implisit berikut:\n$$5x - 2y = 10$$",
+                options: ["$m = 5$", "$m = -5$", "$m = \\frac{5}{2}$", "$m = -\\frac{5}{2}$"],
+                correctIndex: 2,
+                rationale: "Ubah ke bentuk $y = mx + c \\rightarrow -2y = -5x + 10 \\rightarrow y = \\frac{5}{2}x - 5$. Maka gradien $m = \\frac{5}{2}$."
+            },
+            {
+                id: 11,
+                difficulty: 'medium',
+                text: "Tentukan nilai konstanta $c$ apabila garis $y = 2x + c$ diketahui melalui titik koordinat $(1, 5)$!",
+                options: ["$c = 2$", "$c = 3$", "$c = 5$", "$c = 7$"],
+                correctIndex: 1,
+                rationale: "Substitusikan titik $(1, 5)$ ke persamaan: $5 = 2(1) + c \\rightarrow 5 = 2 + c \\rightarrow c = 3$."
+            },
+            {
+                id: 12,
+                difficulty: 'medium',
+                text: "Carilah titik potong sumbu-X dari persamaan garis berikut:\n$$4x + 5y = 20$$",
+                options: ["$(0, 4)$", "$(5, 0)$", "$(-5, 0)$", "$(4, 0)$"],
+                correctIndex: 1,
+                rationale: "Titik potong sumbu-X terjadi saat $y = 0 \\rightarrow 4x + 5(0) = 20 \\rightarrow 4x = 20 \\rightarrow x = 5$. Hasilnya koordinat $(5, 0)$."
+            },
+            {
+                id: 13,
+                difficulty: 'medium',
+                text: "Berapakah nilai gradien dari sebuah garis lurus yang posisinya mendatar sempurna secara horizontal?",
+                options: ["Tidak Terdefinisi", "$m = 1$", "$m = 0$", "$m = -1$"],
+                correctIndex: 2,
+                rationale: "Garis horizontal tidak memiliki kemiringan ke atas maupun ke bawah, sehingga nilai perubahan vertikalnya ($\\Delta y$) sama dengan $0$, berakibat nilai gradien $m = 0$."
+            },
+            {
+                id: 14,
+                difficulty: 'medium',
+                text: "Tentukan persamaan garis yang melalui titik pusat koordinat $(0,0)$ dengan tingkat kemiringan sebesar $-3$!",
+                options: ["$y = -3x$", "$y = 3x$", "$y = x - 3$", "$y = -3$"],
+                correctIndex: 0,
+                rationale: "Gunakan rumus $y = mx + c$ dengan $c = 0$ (melalui titik pusat) dan $m = -3$, menghasilkan persamaan $y = -3x$."
+            },
+            {
+                id: 15,
+                difficulty: 'medium',
+                text: "Berapakah nilai gradien garis yang tegak lurus dengan garis $y = -2x + 8$?",
+                options: ["$m = -2$", "$m = 2$", "$m = \\frac{1}{2}$", "$m = -\\frac{1}{2}$"],
+                correctIndex: 2,
+                rationale: "Gradien garis awal $m_1 = -2$. Syarat tegak lurus: $m_1 \\cdot m_2 = -1 \\rightarrow -2 \\cdot m_2 = -1 \\rightarrow m_2 = \\frac{1}{2}$."
+            },
 
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 h-5 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-xs font-bold">2</span>
-                            <p class="text-sm"><strong>Gunakan rumus satu titik dan gradien:</strong></p>
-                        </div>
-                        <p class="text-xs pl-7 bg-slate-50 p-2 rounded-lg text-slate-600">
-                            Gunakan titik (1, 10) dengan m = 2:<br>
-                            y − y₁ = m(x − x₁)<br>
-                            y − 10 = 2(x − 1)<br>
-                            y − 10 = 2x − 2<br>
-                            y = 2x − 2 + 10<br>
-                            <strong>y = 2x + 8</strong> (Jawaban C)
-                        </p>
-                    </div>
-                </div>`
+            // --- HARD QUESTIONS (16 - 25) ---
+            {
+                id: 16,
+                difficulty: 'hard',
+                text: "Tentukan persamaan garis lurus yang melalui titik $(4, -2)$ dan posisinya sejajar dengan garis $y = 2x + 5$!",
+                options: ["$y = 2x - 10$", "$y = 2x + 10$", "$y = -2x + 6$", "$y = 2x - 6$"],
+                correctIndex: 0,
+                rationale: "Karena sejajar, gradiennya sama ($m = 2$). Persamaan melalui $(4, -2)$: $y - (-2) = 2(x - 4) \\rightarrow y + 2 = 2x - 8 \\rightarrow y = 2x - 10$."
             },
             {
-                number: 6,
-                topic: "Mencari Koefisien Garis",
-                question: "Jika sebuah garis y = ax + 5 melalui titik (2, 11), hitunglah nilai a.",
-                options: [
-                    { id: 'A', text: "a = 2" },
-                    { id: 'B', text: "a = 3" },
-                    { id: 'C', text: "a = 4" },
-                    { id: 'D', text: "a = 5" }
-                ],
-                correct: 'B',
-                explanation: `
-                <div class="space-y-4">
-                    <p class="font-semibold text-slate-800">Gunakan metode substitusi koordinat! 🎯</p>
-                    <div class="space-y-3">
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 h-5 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-xs font-bold">1</span>
-                            <p class="text-sm"><strong>Substitusi x = 2 dan y = 11 ke persamaan:</strong></p>
-                        </div>
-                        <p class="text-xs pl-7 bg-slate-50 p-2 rounded-lg text-slate-600">
-                            y = ax + 5<br>
-                            11 = a(2) + 5
-                        </p>
-
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 h-5 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-xs font-bold">2</span>
-                            <p class="text-sm"><strong>Pecahkan nilai a:</strong></p>
-                        </div>
-                        <p class="text-xs pl-7 bg-slate-50 p-2 rounded-lg text-slate-600">
-                            11 − 5 = 2a<br>
-                            6 = 2a<br>
-                            a = 6 / 2 = <strong>3</strong> (Jawaban B)
-                        </p>
-                    </div>
-                </div>`
+                id: 17,
+                difficulty: 'hard',
+                text: "Tentukan persamaan garis lurus yang melalui titik $(1, 3)$ dan posisinya tegak lurus dengan garis $y = -\\frac{1}{2}x + 4$!",
+                options: ["$y = -2x + 5$", "$y = 2x + 1$", "$y = 2x - 1$", "$y = -\\frac{1}{2}x + \\frac{7}{2}$"],
+                correctIndex: 1,
+                rationale: "Gradien awal $m_1 = -\\frac{1}{2}$, karena tegak lurus maka $m_2 = 2$. Melalui titik $(1, 3)$: $y - 3 = 2(x - 1) \\rightarrow y - 3 = 2x - 2 \\rightarrow y = 2x + 1$."
             },
             {
-                number: 7,
-                topic: "Garis Saling Sejajar",
-                question: "Garis k melalui titik (3, −1) dan sejajar dengan garis y = 2x + 5. Tentukan persamaan garis k.",
-                options: [
-                    { id: 'A', text: "y = 2x + 7" },
-                    { id: 'B', text: "y = 2x − 7" },
-                    { id: 'C', text: "y = −2x + 7" },
-                    { id: 'D', text: "y = 2x − 5" }
-                ],
-                correct: 'B',
-                explanation: `
-                <div class="space-y-4">
-                    <p class="font-semibold text-slate-800">Menghubungkan sifat garis sejajar: 🗺️</p>
-                    <div class="space-y-3">
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 h-5 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-xs font-bold">1</span>
-                            <p class="text-sm"><strong>Ketahui gradien garis sejajar:</strong></p>
-                        </div>
-                        <p class="text-xs pl-7 bg-slate-50 p-2 rounded-lg text-slate-600">
-                            Garis y = 2x + 5 memiliki gradien m₁ = 2.<br>
-                            Karena garis k sejajar, maka gradien garis k (m₂) juga bernilai sama, yaitu <strong>2</strong>.
-                        </p>
-
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 h-5 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-xs font-bold">2</span>
-                            <p class="text-sm"><strong>Gunakan titik (3, −1):</strong></p>
-                        </div>
-                        <p class="text-xs pl-7 bg-slate-50 p-2 rounded-lg text-slate-600">
-                            y − y₁ = m(x − x₁)<br>
-                            y − (−1) = 2(x − 3)<br>
-                            y + 1 = 2x − 6<br>
-                            y = 2x − 6 − 1<br>
-                            <strong>y = 2x − 7</strong> (Jawaban B)
-                        </p>
-                    </div>
-                </div>`
+                id: 18,
+                difficulty: 'hard',
+                text: "Sebuah garis lurus melalui titik koordinat $(2, 1)$ dan $(4, 7)$. Selidiki apakah titik $(5, 10)$ terletak pada garis tersebut!",
+                options: ["Ya, titik tersebut terletak pada garis", "Tidak, titik tersebut berada di luar garis", "Titik berada tepat di sumbu X", "Titik memotong tegak lurus"],
+                correctIndex: 0,
+                rationale: "Gradien garis: $m = \\frac{7 - 1}{4 - 2} = 3$. Persamaannya: $y - 1 = 3(x - 2) \\rightarrow y = 3x - 5$. Uji titik $(5, 10)$ dengan memasukkannya: $10 = 3(5) - 5 \\rightarrow 10 = 10$ (Benar, titik berada di dalam garis)."
             },
             {
-                number: 8,
-                topic: "Titik Potong Sumbu X",
-                question: "Tentukan koordinat titik potong terhadap sumbu-X dari persamaan garis 2y = 4x − 8.",
-                options: [
-                    { id: 'A', text: "(2, 0)" },
-                    { id: 'B', text: "(0, 2)" },
-                    { id: 'C', text: "(-2, 0)" },
-                    { id: 'D', text: "(0, -4)" }
-                ],
-                correct: 'A',
-                explanation: `
-                <div class="space-y-4">
-                    <p class="font-semibold text-slate-800">Cara mencari titik potong sumbu-X: 📍</p>
-                    <div class="space-y-3">
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 h-5 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-xs font-bold">1</span>
-                            <p class="text-sm"><strong>Atur nilai y = 0:</strong></p>
-                        </div>
-                        <p class="text-xs pl-7 bg-slate-50 p-2 rounded-lg text-slate-600">
-                            Syarat titik potong sumbu-X adalah saat grafik berada tepat di ketinggian y = 0.
-                        </p>
-
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 h-5 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-xs font-bold">2</span>
-                            <p class="text-sm"><strong>Selesaikan aljabar x:</strong></p>
-                        </div>
-                        <p class="text-xs pl-7 bg-slate-50 p-2 rounded-lg text-slate-600">
-                            2y = 4x − 8<br>
-                            2(0) = 4x − 8<br>
-                            0 = 4x − 8<br>
-                            4x = 8 &rarr; x = 8 / 4 = <strong>2</strong><br>
-                            Koordinatnya adalah <strong>(2, 0)</strong>. (Jawaban A)
-                        </p>
-                    </div>
-                </div>`
+                id: 19,
+                difficulty: 'hard',
+                text: "Garis $k$ memiliki persamaan $3x - 2y = 6$. Garis $m$ melalui titik pusat $(0,0)$ dan posisinya tegak lurus terhadap garis $k$. Tentukan persamaan garis $m$!",
+                options: ["$y = -\\frac{2}{3}x$", "$y = \\frac{3}{2}x$", "$y = -\\frac{3}{2}x$", "$y = \\frac{2}{3}x$"],
+                correctIndex: 0,
+                rationale: "Gradien garis $k$ adalah $m_k = -\\frac{A}{B} = -\\frac{3}{-2} = \\frac{3}{2}$. Karena garis $m$ tegak lurus, maka gradiennya $m_m = -\\frac{2}{3}$. Melewati $(0,0)$ sehingga $y = -\\frac{2}{3}x$."
             },
             {
-                number: 9,
-                topic: "Aplikasi Kontekstual PGL",
-                question: "Sebuah tangki air berisi 10 liter air dan diisi terus menerus sehingga bertambah 2 liter setiap menit. Tuliskan persamaan garis yang menggambarkan volume air (y) terhadap waktu pengisian (x).",
-                options: [
-                    { id: 'A', text: "y = 10x + 2" },
-                    { id: 'B', text: "y = 2x + 10" },
-                    { id: 'C', text: "y = 2x − 10" },
-                    { id: 'D', text: "y = 12x" }
-                ],
-                correct: 'B',
-                explanation: `
-                <div class="space-y-4">
-                    <p class="font-semibold text-slate-800">Menyusun persamaan dari kondisi nyata: 💧</p>
-                    <div class="space-y-3">
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 h-5 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-xs font-bold">1</span>
-                            <p class="text-sm"><strong>Tentukan komponen awal dan laju perubahan:</strong></p>
-                        </div>
-                        <ul class="text-xs pl-7 list-disc space-y-1 text-slate-600">
-                            <li>Isi awal (saat x = 0) = 10 liter &rarr; Ini adalah konstanta (c) = 10</li>
-                            <li>Laju pertambahan per menit = 2 liter &rarr; Ini adalah gradien (m) = 2</li>
-                        </ul>
-
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 h-5 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-xs font-bold">2</span>
-                            <p class="text-sm"><strong>Susun Persamaan:</strong></p>
-                        </div>
-                        <p class="text-xs pl-7 bg-slate-50 p-2 rounded-lg text-slate-600 font-bold">
-                            y = mx + c <br>
-                            y = 2x + 10 (Jawaban B)
-                        </p>
-                    </div>
-                </div>`
+                id: 20,
+                difficulty: 'hard',
+                text: "Carilah nilai dari konstanta $p$ apabila garis lurus yang menghubungkan titik $(2, p)$ dan $(4, 8)$ diketahui memiliki gradien bernilai $3$!",
+                options: ["$p = 1$", "$p = 2$", "$p = 3$", "$p = 4$"],
+                correctIndex: 1,
+                rationale: "Gunakan rumus gradien: $$3 = \\frac{8 - p}{4 - 2} \\rightarrow 3 = \\frac{8 - p}{2} \\rightarrow 6 = 8 - p \\rightarrow p = 2$$"
             },
             {
-                number: 10,
-                topic: "Verifikasi Keanggotaan Titik",
-                question: "Apakah titik (5, 12) terletak pada garis yang menghubungkan titik (0, 2) dan (2, 6)? Buktikan dengan perhitungan.",
-                options: [
-                    { id: 'A', text: "Ya, karena titik (5, 12) memenuhi persamaan garis y = 2x + 2" },
-                    { id: 'B', text: "Tidak, karena titik (5, 12) berada di luar grafik y = 2x + 2" },
-                    { id: 'C', text: "Ya, karena persamaan garisnya adalah y = 3x − 3" },
-                    { id: 'D', text: "Tidak, karena titik (5, 12) hanya dilewati oleh garis y = x + 7" }
-                ],
-                correct: 'A',
-                explanation: `
-                <div class="space-y-4">
-                    <p class="font-semibold text-slate-800">Cara membuktikan keanggotaan koordinat: 🕵️‍♀️</p>
-                    <div class="space-y-3">
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 h-5 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-xs font-bold">1</span>
-                            <p class="text-sm"><strong>Cari persamaan garis pembentuk dari dua titik (0, 2) dan (2, 6):</strong></p>
-                        </div>
-                        <ul class="text-xs pl-7 list-disc space-y-1 text-slate-600">
-                            <li>Gradien m = (6 − 2) / (2 − 0) = 4 / 2 = 2</li>
-                            <li>Melalui titik (0, 2) yang berarti konstanta c = 2</li>
-                            <li>Persamaan garis: <strong>y = 2x + 2</strong></li>
-                        </ul>
-
-                        <div class="flex items-center gap-2">
-                            <span class="w-5 h-5 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-xs font-bold">2</span>
-                            <p class="text-sm"><strong>Uji titik (5, 12) ke dalam persamaan tersebut:</strong></p>
-                        </div>
-                        <p class="text-xs pl-7 bg-slate-50 p-2 rounded-lg text-slate-600">
-                            y = 2x + 2 <br>
-                            12 = 2(5) + 2 <br>
-                            12 = 10 + 2 &rarr; <strong>12 = 12 (Benar!)</strong>
-                        </p>
-                        <p class="text-xs pl-7 text-emerald-600 font-bold">
-                            Kesimpulan: Ya, karena titik tersebut memenuhi persamaan garis yang sama. (Jawaban A)
-                        </p>
-                    </div>
-                </div>`
+                id: 21,
+                difficulty: 'hard',
+                text: "Analisislah hubungan kedudukan antara dua persamaan garis lurus berikut:\n$$2x - 3y = 5 \\quad \\text{dan} \\quad 4x - 6y = 10$$",
+                options: ["Saling Sejajar", "Saling Tegak Lurus", "Saling Berhimpit", "Saling Berpotongan Biasa"],
+                correctIndex: 2,
+                rationale: "Sederhanakan persamaan kedua dengan membaginya dengan 2: $4x - 6y = 10 \\rightarrow 2x - 3y = 5$. Karena persamaannya identik secara keseluruhan, kedua garis tersebut saling berhimpit."
+            },
+            {
+                id: 22,
+                difficulty: 'hard',
+                text: "Struktur tarif taksi dimodelkan dengan $y = 4500x + 10000$ (di mana $x$ adalah jarak km, $y$ total biaya). Jika total argo menunjukkan angka Rp55.000, berapa kilometer jarak yang telah ditempuh?",
+                options: ["$8 \\text{ km}$", "$10 \\text{ km}$", "$12 \\text{ km}$", "$15 \\text{ km}$"],
+                correctIndex: 1,
+                rationale: "Substitusikan $y = 55000 \\rightarrow 55000 = 4500x + 10000 \\rightarrow 45000 = 4500x \\rightarrow x = 10 \\text{ km}$."
+            },
+            {
+                id: 23,
+                difficulty: 'hard',
+                text: "Rumus penyusutan (depresiasi) harga sebuah gadget dinyatakan dengan $y = -500.000x + 4.000.000$. Berapakah harga gadget tersebut setelah masa pakai berjalan selama $5$ tahun?",
+                options: ["Rp2.000.000", "Rp1.500.000", "Rp2.500.000", "Rp1.000.000"],
+                correctIndex: 1,
+                rationale: "Substitusikan $x = 5 \\rightarrow y = -500.000(5) + 4.000.000 \\rightarrow y = -2.500.000 + 4.000.000 = 1.500.000$."
+            },
+            {
+                id: 24,
+                difficulty: 'hard',
+                text: "Temukan koordinat titik potong dari dua buah garis lurus berikut:\n$$2x - y = 1 \\quad \\text{dan} \\quad x + y = 5$$",
+                options: ["$(2, 3)$", "$(3, 2)$", "$(1, 4)$", "$(4, 1)$"],
+                correctIndex: 0,
+                rationale: "Gunakan eliminasi/substitusi: Jumlahkan kedua persamaan: $(2x - y) + (x + y) = 1 + 5 \\rightarrow 3x = 6 \\rightarrow x = 2$. Masukkan $x=2$ ke persamaan kedua: $2 + y = 5 \\rightarrow y = 3$. Titik potong adalah $(2, 3)$."
+            },
+            {
+                id: 25,
+                difficulty: 'hard',
+                text: "Carilah nilai konstanta $k$ agar persamaan garis $kx - 3y = 9$ berkedudukan tegak lurus dengan garis $2x + 4y = 8$!",
+                options: ["$k = 3$", "$k = 6$", "$k = -6$", "$k = -3$"],
+                correctIndex: 1,
+                rationale: "Gradien garis kedua $m_1 = -\\frac{A}{B} = -\\frac{2}{4} = -\\frac{1}{2}$. Agar tegak lurus, maka gradien garis pertama $m_2 = 2$. Gradien garis pertama adalah $m_2 = -\\frac{k}{-3} = \\frac{k}{3}$. Maka $\\frac{k}{3} = 2 \\rightarrow k = 6$."
             }
         ];
 
-        // State Manajemen Aplikasi Kuis
-        let currentIdx = 0;
-        let selectedOption = null;
-        let userAnswers = Array(10).fill(null); // Menyimpan status: null (belum), 'correct' (benar), 'incorrect' (salah)
-        let selectedAnswers = Array(10).fill(null); // Menyimpan ID jawaban terpilih pengguna ('A', 'B', 'C', 'D')
+        // Competitor state storage
+        let activeDetective = 'anin'; // 'anin' or 'rafa'
+        let currentQuestionIndex = 0; // shared index to control view
 
-        // Inisialisasi Kuis Saat Load
+        let userState = {
+            anin: {
+                answers: {}, // questionId: selectedOptionIndex
+                scores: 0,
+                solvedCount: 0
+            },
+            rafa: {
+                answers: {},
+                scores: 0,
+                solvedCount: 0
+            }
+        };
+
+        // Initialize App
         window.onload = function() {
-            renderNavigasi();
-            loadQuestion(0);
-            updateStatistikView();
-        }
+            renderQuestionGrid();
+            renderQuestion(currentQuestionIndex);
+            updateDashboard();
+        };
 
-        // Render Navigasi Tombol Samping (1-10)
-        function renderNavigasi() {
-            const grid = document.getElementById('grid-navigasi');
-            grid.innerHTML = '';
-            for (let i = 0; i < 10; i++) {
-                const btn = document.createElement('button');
-                btn.id = `nav-btn-${i}`;
-                btn.textContent = i + 1;
-                btn.className = getNavBtnClass(i);
-                btn.onclick = () => loadQuestion(i);
-                grid.appendChild(btn);
-            }
-        }
-
-        // Menentukan Class Style Tombol Navigasi secara Dinamis
-        function getNavBtnClass(index) {
-            let base = "h-11 rounded-xl font-bold font-poppins text-sm transition-all duration-200 border flex items-center justify-center ";
-            if (index === currentIdx) {
-                // Sedang dikerjakan
-                return base + "bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-100";
-            }
-            if (userAnswers[index] === 'correct') {
-                return base + "bg-emerald-500 text-white border-emerald-500 shadow-sm shadow-emerald-100";
-            }
-            if (userAnswers[index] === 'incorrect') {
-                return base + "bg-rose-500 text-white border-rose-500 shadow-sm shadow-rose-100";
-            }
-            // Belum dijawab
-            return base + "bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100";
-        }
-
-        // Memuat Konten Soal Tertentu ke Layout Utama
-        function loadQuestion(index) {
-            currentIdx = index;
-            const q = questionsData[index];
-            selectedOption = selectedAnswers[index];
-
-            // Update info atas
-            document.getElementById('info-nomor-soal').textContent = `SOAL ${index + 1} DARI 10`;
-            document.getElementById('info-topik').textContent = q.topic;
-            document.getElementById('teks-pertanyaan').innerHTML = q.question;
-
-            // Render Pilihan Ganda
-            const opsiContainer = document.getElementById('container-opsi');
-            opsiContainer.innerHTML = '';
+        // Generate map of question buttons
+        function renderQuestionGrid() {
+            const gridMedium = document.getElementById('grid-medium');
+            const gridHard = document.getElementById('grid-hard');
             
-            q.options.forEach(opt => {
-                const isSelected = selectedOption === opt.id;
-                const button = document.createElement('button');
-                button.className = `w-full text-left p-4 rounded-xl border-2 transition-all duration-200 flex items-center gap-4 ${
-                    isSelected 
-                    ? 'border-indigo-600 bg-indigo-50/50 text-indigo-900 font-bold' 
-                    : 'border-slate-100 hover:border-slate-300 bg-white text-slate-700'
-                }`;
-                button.disabled = userAnswers[index] !== null; // Kunci jika sudah diperiksa
-                button.onclick = () => selectOption(opt.id);
+            gridMedium.innerHTML = '';
+            gridHard.innerHTML = '';
 
-                // Indicator lingkaran/ceklis opsi
-                let checkIndicator = `<span class="w-6 h-6 rounded-full border border-slate-300 flex items-center justify-center text-xs text-slate-400 shrink-0 bg-white font-bold font-poppins">${opt.id}</span>`;
-                if (isSelected) {
-                    checkIndicator = `<span class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs shrink-0 font-bold font-poppins">${opt.id}</span>`;
+            QUESTIONS.forEach((q, idx) => {
+                const btn = document.createElement('button');
+                btn.id = `qmap-${idx}`;
+                btn.className = `p-2 rounded-xl text-xs font-mono font-bold transition-all border text-center`;
+                btn.innerText = q.id;
+                btn.onclick = () => {
+                    currentQuestionIndex = idx;
+                    renderQuestion(idx);
+                };
+
+                if (q.difficulty === 'medium') {
+                    gridMedium.appendChild(btn);
+                } else {
+                    gridHard.appendChild(btn);
                 }
+            });
+        }
 
-                // Jika sudah diperiksa, beri efek warna benar/salah pada opsi
-                if (userAnswers[index] !== null) {
-                    if (opt.id === q.correct) {
-                        button.className = "w-full text-left p-4 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-900 font-bold flex items-center gap-4";
-                        checkIndicator = `<span class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-check"></i></span>`;
-                    } else if (isSelected && opt.id !== q.correct) {
-                        button.className = "w-full text-left p-4 rounded-xl border-2 border-rose-500 bg-rose-50 text-rose-900 font-bold flex items-center gap-4";
-                        checkIndicator = `<span class="w-6 h-6 rounded-full bg-rose-500 text-white flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-xmark"></i></span>`;
+        // Render selected question and answers
+        function renderQuestion(idx) {
+            const q = QUESTIONS[idx];
+            
+            // Render basic text elements
+            document.getElementById('q-number-display').innerText = q.id;
+            document.getElementById('q-text-body').innerHTML = q.text;
+
+            const diffBadge = document.getElementById('q-difficulty');
+            if (q.difficulty === 'medium') {
+                diffBadge.innerText = 'MEDIUM CASE';
+                diffBadge.className = "text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20";
+            } else {
+                diffBadge.innerText = 'HARD CASE';
+                diffBadge.className = "text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full tracking-wider bg-rose-500/10 text-rose-400 border border-rose-500/20";
+            }
+
+            // Render Options
+            const optionsContainer = document.getElementById('q-options-container');
+            optionsContainer.innerHTML = '';
+
+            const activeData = userState[activeDetective];
+            const answeredIndex = activeData.answers[q.id];
+
+            q.options.forEach((opt, optIdx) => {
+                const optBtn = document.createElement('button');
+                optBtn.className = `w-full text-left p-4 rounded-xl border text-sm font-semibold transition-all flex justify-between items-center bg-slate-900/60 border-slate-800 hover:border-blue-500/50 text-slate-300`;
+                optBtn.innerHTML = `<span>${opt}</span><i class="fa-regular fa-circle text-slate-600 shrink-0"></i>`;
+                
+                // If question is already answered by this detective, lock selection styles
+                if (answeredIndex !== undefined) {
+                    optBtn.disabled = true;
+                    if (optIdx === q.correctIndex) {
+                        optBtn.className = "w-full text-left p-4 rounded-xl border text-sm font-bold bg-emerald-950/80 border-emerald-500/80 text-emerald-400 flex justify-between items-center transition-all";
+                        optBtn.innerHTML = `<span>${opt}</span><i class="fa-solid fa-circle-check text-emerald-400 shrink-0"></i>`;
+                    } else if (optIdx === answeredIndex) {
+                        optBtn.className = "w-full text-left p-4 rounded-xl border text-sm font-bold bg-rose-950/80 border-rose-500/80 text-rose-400 flex justify-between items-center transition-all";
+                        optBtn.innerHTML = `<span>${opt}</span><i class="fa-solid fa-circle-xmark text-rose-400 shrink-0"></i>`;
+                    } else {
+                        optBtn.className = "w-full text-left p-4 rounded-xl border text-sm font-semibold bg-slate-900/30 border-slate-950 text-slate-600 flex justify-between items-center opacity-40";
                     }
+                } else {
+                    // Click handler
+                    optBtn.onclick = () => submitAnswer(idx, optIdx);
                 }
 
-                button.innerHTML = `
-                    ${checkIndicator}
-                    <span class="text-sm md:text-base font-poppins">${opt.text}</span>
-                `;
-                opsiContainer.appendChild(button);
+                optionsContainer.appendChild(optBtn);
             });
 
-            // Tampilkan/Sembunyikan Pembahasan
-            const boxPembahasan = document.getElementById('box-pembahasan');
-            const btnPeriksa = document.getElementById('btn-periksa');
-            
-            if (userAnswers[index] !== null) {
-                boxPembahasan.classList.remove('hidden');
-                btnPeriksa.classList.add('hidden');
+            // Solution box handling
+            const solBox = document.getElementById('solution-box');
+            if (answeredIndex !== undefined) {
+                solBox.classList.remove('hidden');
+                document.getElementById('solution-text').innerHTML = q.rationale;
                 
-                // Set isi pembahasan
-                document.getElementById('pembahasan-teks').innerHTML = q.explanation;
-                
-                const iconBox = document.getElementById('pembahasan-icon');
-                const judulBox = document.getElementById('pembahasan-judul');
-                
-                if (userAnswers[index] === 'correct') {
-                    boxPembahasan.className = "bg-emerald-50 border border-emerald-200 rounded-2xl p-6 md:p-8 shadow-sm transition-all duration-300";
-                    iconBox.className = "w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center text-white text-lg shrink-0";
-                    iconBox.innerHTML = '<i class="fa-solid fa-face-smile"></i>';
-                    judulBox.innerHTML = 'Benar sekali! Bagus! ✨';
+                const titleEl = document.getElementById('solution-title');
+                if (answeredIndex === q.correctIndex) {
+                    titleEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i> Misi Terpecahkan! Pembahasan:`;
                 } else {
-                    boxPembahasan.className = "bg-rose-50 border border-rose-200 rounded-2xl p-6 md:p-8 shadow-sm transition-all duration-300";
-                    iconBox.className = "w-10 h-10 bg-rose-500 rounded-xl flex items-center justify-center text-white text-lg shrink-0";
-                    iconBox.innerHTML = '<i class="fa-solid fa-book-open"></i>';
-                    judulBox.innerHTML = 'Kurang tepat, mari pelajari caranya:';
+                    titleEl.innerHTML = `<i class="fa-solid fa-circle-exclamation text-rose-400"></i> Analisis Keliru! Pembahasan:`;
                 }
             } else {
-                boxPembahasan.classList.add('hidden');
-                btnPeriksa.classList.remove('hidden');
+                solBox.classList.add('hidden');
             }
 
-            renderNavigasi();
+            // Update Map active highlighting
+            QUESTIONS.forEach((_, i) => {
+                const mapBtn = document.getElementById(`qmap-${i}`);
+                if (mapBtn) {
+                    const savedAns = activeData.answers[QUESTIONS[i].id];
+                    let borderClass = 'border-slate-800 text-slate-500';
+                    let bgClass = 'bg-slate-950/40';
+
+                    if (savedAns !== undefined) {
+                        if (savedAns === QUESTIONS[i].correctIndex) {
+                            borderClass = 'border-emerald-500/30 text-emerald-400';
+                            bgClass = 'bg-emerald-500/10';
+                        } else {
+                            borderClass = 'border-rose-500/30 text-rose-400';
+                            bgClass = 'bg-rose-500/10';
+                        }
+                    }
+
+                    if (i === idx) {
+                        borderClass = activeDetective === 'anin' 
+                            ? 'border-pink-500 text-pink-400 ring-2 ring-pink-500/20' 
+                            : 'border-cyan-500 text-cyan-400 ring-2 ring-cyan-500/20';
+                    }
+
+                    mapBtn.className = `p-2 rounded-xl text-xs font-mono font-bold transition-all border text-center ${borderClass} ${bgClass}`;
+                }
+            });
+
+            // Update navigational buttons
+            document.getElementById('btn-prev-q').disabled = (idx === 0);
+            document.getElementById('btn-next-q').disabled = (idx === QUESTIONS.length - 1);
+
+            // Re-render math notation dynamically
+            renderLaTeX();
         }
 
-        // Event Klik Pada Salah Satu Opsi
-        function selectOption(optId) {
-            if (userAnswers[currentIdx] !== null) return; // Kunci jika sudah diperiksa
-            selectedOption = optId;
-            selectedAnswers[currentIdx] = optId;
-            loadQuestion(currentIdx);
-        }
+        // Active selection callback
+        function submitAnswer(qIdx, selectedOptIdx) {
+            const q = QUESTIONS[qIdx];
+            const activeData = userState[activeDetective];
 
-        // Lewati Soal Tanpa Menjawab
-        function lewatiSoal() {
-            nextSoal();
-        }
+            // Save state
+            activeData.answers[q.id] = selectedOptIdx;
+            activeData.solvedCount++;
 
-        // Verifikasi & Koreksi Jawaban Aktif
-        function periksaJawaban() {
-            if (!selectedOption) {
-                showToast("Silakan pilih salah satu opsi jawaban terlebih dahulu!");
-                return;
+            if (selectedOptIdx === q.correctIndex) {
+                activeData.scores++;
             }
 
-            const q = questionsData[currentIdx];
-            if (selectedOption === q.correct) {
-                userAnswers[currentIdx] = 'correct';
-            } else {
-                userAnswers[currentIdx] = 'incorrect';
+            // Re-render dashboard, scorecards & active question
+            updateDashboard();
+            renderQuestion(qIdx);
+        }
+
+        // Switch active investigator profile
+        function switchActiveTab(det) {
+            activeDetective = det;
+            
+            // Adjust design themes
+            const isAnin = (det === 'anin');
+            document.getElementById('tab-btn-anin').className = isAnin 
+                ? "py-3 px-4 rounded-xl border font-bold text-sm transition-all flex flex-col items-center gap-1 bg-pink-500/10 border-pink-500/40 text-pink-400 shadow-lg"
+                : "py-3 px-4 rounded-xl border font-bold text-sm transition-all flex flex-col items-center gap-1 bg-slate-900 border-slate-800 text-slate-400";
+            
+            document.getElementById('tab-btn-rafa').className = !isAnin 
+                ? "py-3 px-4 rounded-xl border font-bold text-sm transition-all flex flex-col items-center gap-1 bg-cyan-500/10 border-cyan-500/40 text-cyan-400 shadow-lg"
+                : "py-3 px-4 rounded-xl border font-bold text-sm transition-all flex flex-col items-center gap-1 bg-slate-900 border-slate-800 text-slate-400";
+
+            document.getElementById('active-det-badge').innerText = isAnin ? 'Anin' : 'Rafa';
+            document.getElementById('active-det-badge').className = isAnin 
+                ? "text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-pink-500/10 text-pink-400 border border-pink-500/20"
+                : "text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20";
+
+            document.getElementById('board-bg-badge').innerText = isAnin ? 'ANIN WORKSPACE' : 'RAFA WORKSPACE';
+            document.getElementById('foot-active-det').innerText = isAnin ? 'Anin' : 'Rafa';
+            document.getElementById('foot-active-det').className = isAnin ? 'text-pink-400 font-extrabold' : 'text-cyan-400 font-extrabold';
+
+            updateDashboard();
+            renderQuestion(currentQuestionIndex);
+        }
+
+        // Update indicators
+        function updateDashboard() {
+            // Versus scores update
+            document.getElementById('vs-score-anin').innerText = `${userState.anin.scores} / 25`;
+            document.getElementById('vs-score-rafa').innerText = `${userState.rafa.scores} / 25`;
+
+            // Active detective states update
+            const activeData = userState[activeDetective];
+            document.getElementById('stat-solved').innerText = `${activeData.solvedCount} / 25`;
+
+            // Accuracy
+            const accuracy = activeData.solvedCount > 0 
+                ? Math.round((activeData.scores / activeData.solvedCount) * 100) 
+                : 0;
+            document.getElementById('stat-accuracy').innerText = `${accuracy}%`;
+
+            // Progress Bar
+            const progress = Math.round((activeData.solvedCount / QUESTIONS.length) * 100);
+            document.getElementById('stat-progress-text').innerText = `${progress}%`;
+            document.getElementById('stat-progress-bar').style.width = `${progress}%`;
+        }
+
+        // Navigation
+        function navigateQuestion(dir) {
+            const nextIdx = currentQuestionIndex + dir;
+            if (nextIdx >= 0 && nextIdx < QUESTIONS.length) {
+                currentQuestionIndex = nextIdx;
+                renderQuestion(nextIdx);
             }
-
-            updateStatistikView();
-            loadQuestion(currentIdx);
         }
 
-        // Navigasi ke Soal Berikutnya (Muter ke 0 Jika Sudah di Nomor 10)
-        function nextSoal() {
-            const nextIdx = (currentIdx + 1) % 10;
-            loadQuestion(nextIdx);
+        // Render math equations on render
+        function renderLaTeX() {
+            const board = document.getElementById('quiz-board-content');
+            if (board && typeof renderMathInElement === 'function') {
+                renderMathInElement(board, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ],
+                    throwOnError: false
+                });
+            }
         }
 
-        // Update Seluruh Statistik di Tampilan secara Real-time
-        function updateStatistikView() {
-            const countSelesai = userAnswers.filter(ans => ans !== null).length;
-            const countBenar = userAnswers.filter(ans => ans === 'correct').length;
-
-            document.getElementById('score-progres').textContent = `${countSelesai}/10`;
-            document.getElementById('score-benar').textContent = countBenar;
-            document.getElementById('global-badge-score').textContent = `Skor: ${countBenar} / 10`;
-        }
-
-        // Custom Toast untuk Notifikasi Cantik (Tidak Menggunakan Browser Alert)
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.className = "fixed bottom-5 right-5 bg-slate-900 text-white text-sm px-5 py-3 rounded-xl shadow-lg flex items-center gap-2 z-50 animate-slide-up transition-all";
-            toast.innerHTML = `<i class="fa-solid fa-circle-exclamation text-amber-400"></i> ${message}`;
-            document.body.appendChild(toast);
-            setTimeout(() => {
-                toast.classList.add('opacity-0');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+        // Full app reset
+        function resetMisi() {
+            if (confirm("Apakah kamu ingin mereset seluruh progres kompetisi Anin & Rafa?")) {
+                userState = {
+                    anin: { answers: {}, scores: 0, solvedCount: 0 },
+                    rafa: { answers: {}, scores: 0, solvedCount: 0 }
+                };
+                currentQuestionIndex = 0;
+                switchActiveTab('anin');
+            }
         }
     </script>
 </body>
