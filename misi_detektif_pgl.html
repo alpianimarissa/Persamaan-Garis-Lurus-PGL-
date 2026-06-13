@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misi Detektif PGL - Persamaan Garis Lurus</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- KaTeX Core CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <!-- KaTeX Auto-Render Extension -->
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b132b;
+            color: #f4f5f6;
+        }
+        .monospace {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col overflow-x-hidden">
+
+    <!-- TOP NAVIGATION / HEADER -->
+    <header class="bg-slate-900 border-b border-slate-800 py-4 px-6 flex items-center justify-between sticky top-0 z-50">
+        <div class="flex items-center space-x-3">
+            <div class="bg-blue-600 p-2.5 rounded-xl shadow-lg shadow-blue-500/20">
+                <i class="fa-solid fa-user-secret text-xl text-white"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-extrabold tracking-tight text-white flex items-center gap-2">
+                    MISI DETEKTIF PGL
+                    <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-medium">Fase D (SMP)</span>
+                </h1>
+                <p class="text-xs text-slate-400">E-Learning Persamaan Garis Lurus Interaktif</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-4">
+            <!-- Progress Tracker -->
+            <div class="hidden md:flex flex-col items-end">
+                <span class="text-xs text-slate-400 font-medium">Progres Detektif: <span id="progress-percentage">0%</span></span>
+                <div class="w-48 bg-slate-800 h-2 rounded-full overflow-hidden mt-1 border border-slate-700">
+                    <div id="progress-bar" class="bg-gradient-to-r from-blue-500 to-indigo-500 h-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+            </div>
+            <!-- Quick Reset -->
+            <button onclick="resetMisi()" class="text-xs px-3 py-1.5 bg-slate-800 hover:bg-red-950/40 border border-slate-700 hover:border-red-500/30 text-slate-300 hover:text-red-400 rounded-lg transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-rotate-left"></i> Reset
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <div class="flex-1 flex flex-col lg:flex-row relative">
+        
+        <!-- SIDEBAR - CHAPTER LIST -->
+        <aside id="sidebar" class="lg:w-80 bg-slate-950 border-r border-slate-900 flex flex-col shrink-0">
+            <!-- Toggle Button for Mobile -->
+            <div class="p-4 border-b border-slate-900 flex lg:hidden items-center justify-between bg-slate-900">
+                <span class="font-bold text-sm text-slate-200 flex items-center gap-2">
+                    <i class="fa-solid fa-map-location-dot text-blue-500"></i> Peta Misi Pembelajaran
+                </span>
+                <button onclick="toggleMobileSidebar()" class="p-2 rounded-lg bg-slate-800 border border-slate-700 text-white">
+                    <i id="mobile-toggle-icon" class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+
+            <!-- Chapter Navigation List -->
+            <div id="chapter-list-container" class="hidden lg:block flex-1 overflow-y-auto max-h-[calc(100vh-140px)] p-3 space-y-1 bg-slate-950">
+                <!-- Chapters will be generated dynamically by JS -->
+            </div>
+        </aside>
+
+        <!-- MAIN WORKSPACE CONTENT -->
+        <main class="flex-1 bg-slate-900 p-4 md:p-8 flex flex-col justify-between overflow-y-auto max-h-[calc(100vh-73px)]">
+            
+            <!-- Page Frame Container -->
+            <div class="max-w-4xl mx-auto w-full flex-1 flex flex-col justify-center">
+                <div id="page-content-wrapper" class="bg-slate-950/40 border border-slate-800/80 rounded-3xl p-6 md:p-10 shadow-2xl transition-all duration-300">
+                    <!-- Target content generated dynamically -->
+                </div>
+            </div>
+
+            <!-- NAVIGATION BUTTONS FOOTER -->
+            <div class="max-w-4xl mx-auto w-full mt-8 pt-6 border-t border-slate-800 flex items-center justify-between">
+                <button id="btn-prev" onclick="prevPage()" class="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-medium border border-slate-700 hover:border-slate-600 transition-all flex items-center gap-2 disabled:opacity-30 disabled:pointer-events-none">
+                    <i class="fa-solid fa-arrow-left"></i> Misi Sebelumnya
+                </button>
+                <div class="text-sm font-semibold text-slate-400 bg-slate-950/60 border border-slate-850 px-4 py-2 rounded-full shadow-inner">
+                    Halaman <span id="current-page-display" class="text-blue-400 font-bold">1</span> dari <span class="text-slate-300">26</span>
+                </div>
+                <button id="btn-next" onclick="nextPage()" class="px-5 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold border border-blue-500/30 transition-all flex items-center gap-2 shadow-lg shadow-blue-500/10">
+                    Misi Berikutnya <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- MAIN JAVASCRIPT LOGIC -->
+    <script>
+        // Total pages configured
+        const TOTAL_PAGES = 26;
+        let currentPage = 1;
+        let completedPages = JSON.parse(localStorage.getItem('detektif_pgl_completed')) || [1];
+
+        // Custom local data for interactive elements
+        let scoreState = {
+            misi7_x1: 2, misi7_y1: 3, misi7_x2: 5, misi7_y2: 9,
+            misi11_a: 3, misi11_b: -4, misi11_c: 12,
+            calcGradResult: "",
+            quizResponses: {},
+            certificateName: "",
+            simulatorM: 1,
+            simulatorC: 0
+        };
+
+        // Complete definitions for all 26 Pages
+        const PAGES = {
+            1: {
+                title: "Gerbang Utama Misi",
+                subtitle: "Dashboard & Peta Perjalanan Belajar",
+                icon: "fa-solid fa-door-open",
+                render: () => `
+                    <div class="text-center space-y-6">
+                        <div class="inline-flex p-4 bg-blue-500/10 border border-blue-500/30 rounded-full text-blue-400 mb-2">
+                            <i class="fa-solid fa-shield-halved text-5xl"></i>
+                        </div>
+                        <h2 class="text-3xl font-extrabold text-white">Selamat Datang di Markas Detektif PGL!</h2>
+                        <p class="text-slate-300 max-w-xl mx-auto leading-relaxed">
+                            Halo Agen Anindya! Di sini kamu akan dilatih menjadi seorang <strong>Detektif Garis Lurus</strong>. Di depan sana ada 25 level misi yang akan melatih logikamu menaklukkan koordinat Kartesius, mendesain gradien, hingga memodelkan navigasi pesawat!
+                        </p>
+                        
+                        <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 text-left max-w-2xl mx-auto space-y-4">
+                            <h3 class="font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-circle-info text-amber-500"></i> Aturan Main & Misi Kamu:
+                            </h3>
+                            <ul class="space-y-2 text-sm text-slate-300">
+                                <li class="flex items-start gap-2.5">
+                                    <span class="bg-blue-500/20 text-blue-400 w-5 h-5 rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">1</span>
+                                    Pelajari setiap halaman secara seksama, perhatikan visualisasi grafik dan rumus LaTeX.
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="bg-blue-500/20 text-blue-400 w-5 h-5 rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</span>
+                                    Cobalah kalkulator interaktif, simulator grafik live, dan uji kemampuanmu di Kuis Detektif.
+                                </li>
+                                <li class="flex items-start gap-2.5">
+                                    <span class="bg-blue-500/20 text-blue-400 w-5 h-5 rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">3</span>
+                                    Kumpulkan skor dan raih <strong>Sertifikat Resmi Detektif PGL</strong> di akhir perjalanan!
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="pt-4">
+                            <button onclick="nextPage()" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-blue-500/20 transition-all inline-flex items-center gap-2">
+                                Mulai Misi Pertama <i class="fa-solid fa-crosshairs"></i>
+                            </button>
+                        </div>
+                    </div>
+                `
+            },
+            2: {
+                title: "Petualangan Kuadran",
+                subtitle: "Review Sistem Koordinat Kartesius",
+                icon: "fa-solid fa-compass",
+                render: () => `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div class="space-y-4">
+                            <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">Level 1</span>
+                            <h2 class="text-2xl font-extrabold text-white">Sistem Koordinat & Pembagian Kuadran</h2>
+                            <p class="text-slate-300 text-sm leading-relaxed">
+                                Garis lurus terbentuk dari jutaan titik yang berderet secara konsisten pada koordinat Kartesius. Sistem ini membagi bidang datar menjadi empat area utama yang disebut <strong>Kuadran</strong>.
+                            </p>
+                            <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2 text-xs">
+                                <p class="text-slate-300">Letak Titik $P(x, y)$ ditentukan oleh jarak sumbu mendatar (Abstis/x) dan tegak (Ordinat/y):</p>
+                                <ul class="grid grid-cols-2 gap-2 text-slate-400 font-medium">
+                                    <li class="bg-slate-950/40 p-2 rounded border border-slate-800/60"><strong class="text-white">Kuadran I:</strong> $(+x, +y)$</li>
+                                    <li class="bg-slate-950/40 p-2 rounded border border-slate-800/60"><strong class="text-white">Kuadran II:</strong> $(-x, +y)$</li>
+                                    <li class="bg-slate-950/40 p-2 rounded border border-slate-800/60"><strong class="text-white">Kuadran III:</strong> $(-x, -y)$</li>
+                                    <li class="bg-slate-950/40 p-2 rounded border border-slate-800/60"><strong class="text-white">Kuadran IV:</strong> $(+x, -y)$</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="flex flex-col items-center justify-center p-4 bg-slate-900/60 border border-slate-800 rounded-2xl relative">
+                            <!-- SVG CARTESIAN QUADRANTS -->
+                            <svg class="w-full max-w-[280px] h-auto" viewBox="0 0 200 200">
+                                <rect x="5" y="5" width="190" height="190" rx="10" fill="#020617" />
+                                <!-- Axes -->
+                                <line x1="100" y1="10" x2="100" y2="190" stroke="#475569" stroke-width="2" />
+                                <line x1="10" y1="100" x2="190" y2="100" stroke="#475569" stroke-width="2" />
+                                <!-- Arrows -->
+                                <polygon points="100,5 96,12 104,12" fill="#475569" />
+                                <polygon points="195,100 188,96 188,104" fill="#475569" />
+                                <!-- Quadrant Labels -->
+                                <text x="145" y="55" fill="#3b82f6" font-size="12" font-weight="bold" text-anchor="middle">Kuadran I</text>
+                                <text x="145" y="68" fill="#64748b" font-size="9" text-anchor="middle">(+, +)</text>
+                                
+                                <text x="55" y="55" fill="#10b981" font-size="12" font-weight="bold" text-anchor="middle">Kuadran II</text>
+                                <text x="55" y="68" fill="#64748b" font-size="9" text-anchor="middle">(-, +)</text>
+                                
+                                <text x="55" y="145" fill="#f59e0b" font-size="12" font-weight="bold" text-anchor="middle">Kuadran III</text>
+                                <text x="55" y="158" fill="#64748b" font-size="9" text-anchor="middle">(-, -)</text>
+                                
+                                <text x="145" y="145" fill="#ec4899" font-size="12" font-weight="bold" text-anchor="middle">Kuadran IV</text>
+                                <text x="145" y="158" fill="#64748b" font-size="9" text-anchor="middle">(+, -)</text>
+                                
+                                <!-- Origin -->
+                                <circle cx="100" cy="100" r="4" fill="#ef4444" />
+                                <text x="108" y="112" fill="#ef4444" font-size="8" font-weight="bold">O(0,0)</text>
+                            </svg>
+                            <span class="text-xs text-slate-400 mt-3 font-semibold text-center">Tantangan: Di mana koordinat titik $K(-3, 4)$? Jawab: Kuadran II!</span>
+                        </div>
+                    </div>
+                `
+            },
+            3: {
+                title: "Pergeseran Titik Koordinat",
+                subtitle: "Bagaimana titik bergerak di dalam ruang Kartesius",
+                icon: "fa-solid fa-arrows-up-down-left-right",
+                render: () => `
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">Level 2</span>
+                            <h2 class="text-2xl font-extrabold text-white">Prinsip Arah Pergeseran Koordinat</h2>
+                        </div>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Memahami pergeseran titik adalah dasar krusial sebelum kita menghitung <strong>Gradien</strong>. Pergerakan titik dipetakan ke arah sumbu $X$ dan sumbu $Y$.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Left: Direction Rules -->
+                            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+                                <h3 class="font-bold text-white text-sm flex items-center gap-2">
+                                    <i class="fa-solid fa-compass-drafting text-blue-500"></i> Aturan Arah Pergeseran:
+                                </h3>
+                                <div class="space-y-2.5 text-xs">
+                                    <div class="flex justify-between items-center bg-slate-950/40 p-2.5 rounded border border-slate-850">
+                                        <span class="text-slate-300"><i class="fa-solid fa-arrow-right text-emerald-500 mr-2"></i> Ke Kanan</span>
+                                        <span class="font-bold text-emerald-400">Sumbu $x$ positif ($+x$)</span>
+                                    </div>
+                                    <div class="flex justify-between items-center bg-slate-950/40 p-2.5 rounded border border-slate-850">
+                                        <span class="text-slate-300"><i class="fa-solid fa-arrow-left text-rose-500 mr-2"></i> Ke Kiri</span>
+                                        <span class="font-bold text-rose-400">Sumbu $x$ negatif ($-x$)</span>
+                                    </div>
+                                    <div class="flex justify-between items-center bg-slate-950/40 p-2.5 rounded border border-slate-850">
+                                        <span class="text-slate-300"><i class="fa-solid fa-arrow-up text-blue-500 mr-2"></i> Ke Atas</span>
+                                        <span class="font-bold text-blue-400">Sumbu $y$ positif ($+y$)</span>
+                                    </div>
+                                    <div class="flex justify-between items-center bg-slate-950/40 p-2.5 rounded border border-slate-850">
+                                        <span class="text-slate-300"><i class="fa-solid fa-arrow-down text-amber-500 mr-2"></i> Ke Bawah</span>
+                                        <span class="font-bold text-amber-400">Sumbu $y$ negatif ($-y$)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Right: Interactive mini-game widget -->
+                            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between">
+                                <h3 class="font-bold text-white text-sm flex items-center gap-2 mb-2">
+                                    <i class="fa-solid fa-gamepad text-indigo-400"></i> Lab Tantangan Cepat
+                                </h3>
+                                <p class="text-xs text-slate-300 mb-4">
+                                    "Jika kamu berdiri di titik $(2, -3)$ lalu melompat <strong>4 langkah ke atas</strong> dan <strong>3 langkah ke kiri</strong>, di koordinat mana kamu sekarang berada?"
+                                </p>
+                                <div class="bg-slate-950/80 border border-slate-850 p-4 rounded-xl text-center space-y-3">
+                                    <div class="flex justify-center gap-6 text-sm">
+                                        <div class="text-center">
+                                            <span class="block text-xs text-slate-500">Nilai $x$</span>
+                                            <span class="font-bold text-slate-200">2 - 3 = <span class="text-rose-400">-1</span></span>
+                                        </div>
+                                        <div class="text-center">
+                                            <span class="block text-xs text-slate-500">Nilai $y$</span>
+                                            <span class="font-bold text-slate-200">-3 + 4 = <span class="text-emerald-400">1</span></span>
+                                        </div>
+                                    </div>
+                                    <div class="border-t border-slate-800/80 pt-2.5">
+                                        <p class="text-xs text-slate-400">Koordinat Akhir:</p>
+                                        <span class="text-lg font-extrabold text-blue-400">$P'(-1, 1)$</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            4: {
+                title: "Garis Lurus di Sekitar Kita",
+                subtitle: "Koneksi Nyata Konsep Matematika",
+                icon: "fa-solid fa-road",
+                render: () => `
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">Level 3</span>
+                            <h2 class="text-2xl font-extrabold text-white">Koneksi Garis Lurus di Dunia Nyata</h2>
+                        </div>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Matematika bukan sekadar barisan angka membosankan. Persamaan garis lurus menyusun sistem mekanika yang sangat penting di berbagai sektor kehidupan nyata!
+                        </p>
+                        
+                        <!-- Grid of Real World Cases -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Case 1 -->
+                            <div class="bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-xl p-4 transition-all space-y-2.5 text-center">
+                                <div class="text-blue-400 text-2xl mx-auto py-1">
+                                    <i class="fa-solid fa-route"></i>
+                                </div>
+                                <h4 class="font-bold text-white text-sm">Kemiringan Jalan Tol</h4>
+                                <p class="text-slate-400 text-xs leading-relaxed">
+                                    Para insinyur teknik sipil menghitung tanjakan jalan raya dan terowongan dengan gradien tertentu agar aman dilalui kendaraan berat.
+                                </p>
+                            </div>
+                            <!-- Case 2 -->
+                            <div class="bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-xl p-4 transition-all space-y-2.5 text-center">
+                                <div class="text-indigo-400 text-2xl mx-auto py-1">
+                                    <i class="fa-solid fa-plane-departure"></i>
+                                </div>
+                                <h4 class="font-bold text-white text-sm">Navigasi Pesawat</h4>
+                                <p class="text-slate-400 text-xs leading-relaxed">
+                                    Menentukan lintasan take-off dan landing pesawat agar membentuk garis lurus diagonal konstan yang aman tanpa menabrak bukit.
+                                </p>
+                            </div>
+                            <!-- Case 3 -->
+                            <div class="bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-xl p-4 transition-all space-y-2.5 text-center">
+                                <div class="text-emerald-400 text-2xl mx-auto py-1">
+                                    <i class="fa-solid fa-chart-line"></i>
+                                </div>
+                                <h4 class="font-bold text-white text-sm">Prediksi Finansial</h4>
+                                <p class="text-slate-400 text-xs leading-relaxed">
+                                    Menganalisis depresiasi nilai aset investasi atau menghitung besaran struktur tarif langganan bulanan dari jarak tempuh.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Mini SVG Illustration -->
+                        <div class="bg-slate-950/80 p-4 border border-slate-800 rounded-xl flex items-center justify-between">
+                            <div class="space-y-1 pr-4">
+                                <h4 class="text-sm font-bold text-white flex items-center gap-1.5">
+                                    <i class="fa-solid fa-mountain text-amber-500"></i> Visualisasi Kemiringan Jalan
+                                </h4>
+                                <p class="text-xs text-slate-400 leading-relaxed">Garis diagonal merah menunjukkan arah menanjak konstan dengan gradien tertentu.</p>
+                            </div>
+                            <svg class="w-32 h-16 shrink-0 bg-slate-900 rounded border border-slate-800" viewBox="0 0 100 50">
+                                <polygon points="10,40 90,40 90,15" fill="#1e293b" />
+                                <line x1="10" y1="40" x2="90" y2="15" stroke="#ef4444" stroke-width="2.5" />
+                                <text x="50" y="25" fill="#f4f5f6" font-size="7" font-weight="bold" text-anchor="middle" transform="rotate(-17, 50, 25)">Gradien (m)</text>
+                                <line x1="10" y1="42" x2="90" y2="42" stroke="#475569" stroke-width="1" stroke-dasharray="2,2" />
+                            </svg>
+                        </div>
+                    </div>
+                `
+            },
+            5: {
+                title: "Mengenal Konsep Gradien (m)",
+                subtitle: "Definisi Kemiringan Garis Lurus",
+                icon: "fa-solid fa-stairs",
+                render: () => `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div class="space-y-4">
+                            <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">Level 4</span>
+                            <h2 class="text-2xl font-extrabold text-white">Apa Itu Gradien ($m$)?</h2>
+                            <p class="text-slate-300 text-sm leading-relaxed">
+                                Secara sederhana, <strong>Gradien ($m$)</strong> adalah nilai kekuatan kemiringan atau kecondongan suatu garis lurus.
+                            </p>
+                            <p class="text-slate-300 text-sm leading-relaxed">
+                                Gradien didefinisikan sebagai perbandingan antara <strong>perubahan komponen tegak (vertikal/Y)</strong> terhadap <strong>perubahan komponen mendatar (horizontal/X)</strong>.
+                            </p>
+                            
+                            <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+                                <p class="text-xs text-slate-400">Formula Inti:</p>
+                                <div class="py-2 text-center text-xl font-bold text-blue-400">
+                                    $$m = \\frac{\\text{Perubahan } y}{\\text{Perubahan } x} = \\frac{\\Delta y}{\\Delta x}$$
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-4 flex flex-col items-center">
+                            <!-- SVG Slope Visual -->
+                            <svg class="w-full max-w-[200px]" viewBox="0 0 100 100">
+                                <rect width="100" height="100" rx="10" fill="#020617" />
+                                <grid class="opacity-10" />
+                                <line x1="20" y1="80" x2="80" y2="80" stroke="#475569" stroke-width="1.5" stroke-dasharray="2" />
+                                <line x1="80" y1="80" x2="80" y2="30" stroke="#475569" stroke-width="1.5" stroke-dasharray="2" />
+                                <line x1="20" y1="80" x2="80" y2="30" stroke="#3b82f6" stroke-width="3" />
+                                
+                                <text x="50" y="88" fill="#94a3b8" font-size="7" text-anchor="middle">Langkah Mendatar (Δx)</text>
+                                <text x="88" y="55" fill="#94a3b8" font-size="7" text-anchor="middle" transform="rotate(-90, 88, 55)">Langkah Tegak (Δy)</text>
+                                <text x="45" y="45" fill="#3b82f6" font-size="8" font-weight="bold">Kemiringan (m)</text>
+                            </svg>
+                            <p class="text-xs text-slate-400 text-center leading-relaxed">
+                                Semakin besar nilai pembilang $\\Delta y$ dibanding penyebut $\\Delta x$, maka kemiringan tangga/garis akan semakin curam tegak.
+                            </p>
+                        </div>
+                    </div>
+                `
+            },
+            6: {
+                title: "Jenis Arah Gradien",
+                subtitle: "Gradien Positif, Negatif, Nol, & Tak Terdefinisi",
+                icon: "fa-solid fa-chart-line",
+                render: () => `
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">Level 5</span>
+                            <h2 class="text-2xl font-extrabold text-white">Karakteristik Arah Garis berdasarkan Gradien</h2>
+                        </div>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Melihat arah hadap garis lurus pada bidang kartesius langsung mengungkap sifat gradiennya:
+                        </p>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <!-- Positif -->
+                            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-3 text-center">
+                                <span class="text-xs font-extrabold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">$m > 0$ (Positif)</span>
+                                <svg class="w-16 h-16 mx-auto bg-slate-950 rounded border border-slate-850" viewBox="0 0 50 50">
+                                    <line x1="5" y1="45" x2="45" y2="5" stroke="#10b981" stroke-width="2.5" />
+                                </svg>
+                                <p class="text-[11px] text-slate-400">Garis naik miring ke kanan dari kiri bawah.</p>
+                            </div>
+                            
+                            <!-- Negatif -->
+                            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-3 text-center">
+                                <span class="text-xs font-extrabold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-full">$m < 0$ (Negatif)</span>
+                                <svg class="w-16 h-16 mx-auto bg-slate-950 rounded border border-slate-850" viewBox="0 0 50 50">
+                                    <line x1="5" y1="5" x2="45" y2="45" stroke="#f43f5e" stroke-width="2.5" />
+                                </svg>
+                                <p class="text-[11px] text-slate-400">Garis turun miring ke kanan dari kiri atas.</p>
+                            </div>
+
+                            <!-- Nol -->
+                            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-3 text-center">
+                                <span class="text-xs font-extrabold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full">$m = 0$ (Nol)</span>
+                                <svg class="w-16 h-16 mx-auto bg-slate-950 rounded border border-slate-850" viewBox="0 0 50 50">
+                                    <line x1="5" y1="25" x2="45" y2="25" stroke="#f59e0b" stroke-width="2.5" />
+                                </svg>
+                                <p class="text-[11px] text-slate-400">Garis mendatar sejajar sumbu X secara horizontal.</p>
+                            </div>
+
+                            <!-- Tak terdefinisi -->
+                            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-3 text-center">
+                                <span class="text-xs font-extrabold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-full">$m$ Tak Terdefinisi</span>
+                                <svg class="w-16 h-16 mx-auto bg-slate-950 rounded border border-slate-850" viewBox="0 0 50 50">
+                                    <line x1="25" y1="5" x2="25" y2="45" stroke="#6366f1" stroke-width="2.5" />
+                                </svg>
+                                <p class="text-[11px] text-slate-400">Garis tegak lurus vertikal sejajar sumbu Y.</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            7: {
+                title: "Rumus Emas Gradien Dua Titik",
+                subtitle: "Menghitung Gradien Secara Aljabar",
+                icon: "fa-solid fa-calculator",
+                render: () => `
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">Level 6</span>
+                            <h2 class="text-2xl font-extrabold text-white">Mencari Gradien dari Dua Koordinat</h2>
+                        </div>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Jika kita memiliki dua buah titik sembarang, sebut saja $A(x_1, y_1)$ dan $B(x_2, y_2)$, maka rumus mencari gradiennya adalah:
+                        </p>
+                        
+                        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6 text-center max-w-md mx-auto">
+                            <div class="text-xs text-slate-400 uppercase tracking-wider mb-2">Rumus Gradien Dua Titik</div>
+                            <div class="text-2xl font-extrabold text-blue-400 py-3">
+                                $$m = \\frac{y_2 - y_1}{x_2 - x_1}$$
+                            </div>
+                            <div class="text-[11px] text-slate-500 mt-2">Penting: Jangan sampai tertukar urutan variabel koordinatnya!</div>
+                        </div>
+
+                        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
+                            <h4 class="font-bold text-white text-sm">Contoh Analisis Kasus:</h4>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                Tentukan gradien garis yang melalui titik $(2, 3)$ dan $(5, 9)$!
+                            </p>
+                            <div class="bg-slate-950/60 p-3 rounded-lg text-xs font-mono text-slate-400 space-y-1">
+                                <p>• Identifikasi: $(x_1, y_1) = (2, 3)$ dan $(x_2, y_2) = (5, 9)$</p>
+                                <p>• Penyelesaian: $$m = \\frac{9 - 3}{5 - 2} = \\frac{6}{3} = 2$$</p>
+                                <p class="text-emerald-400 font-bold">• Gradien akhir: $m = 2$ (Garis naik condong ke kanan)</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            8: {
+                title: "Kalkulator Gradien Otomatis",
+                subtitle: "Coba Hitung Sendiri Gradien-mu",
+                icon: "fa-solid fa-gears",
+                render: () => `
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">Level 7</span>
+                            <h2 class="text-2xl font-extrabold text-white">Lab Hitung Gradien Interaktif</h2>
+                        </div>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Ubah koordinat kedua titik di bawah ini untuk melihat bagaimana gradien dihitung secara real-time:
+                        </p>
+                        
+                        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
+                            <div class="grid grid-cols-2 gap-4">
+                                <!-- Titik 1 -->
+                                <div class="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-3">
+                                    <h4 class="text-xs font-bold text-blue-400 uppercase tracking-wide">Titik A (x1, y1)</h4>
+                                    <div class="grid grid-cols-2 gap-2 text-xs">
+                                        <div>
+                                            <label class="block text-slate-500 mb-1">x1</label>
+                                            <input type="number" id="input_x1" value="${scoreState.misi7_x1}" oninput="updateMisi7Calc()" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white focus:outline-none focus:border-blue-500" />
+                                        </div>
+                                        <div>
+                                            <label class="block text-slate-500 mb-1">y1</label>
+                                            <input type="number" id="input_y1" value="${scoreState.misi7_y1}" oninput="updateMisi7Calc()" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white focus:outline-none focus:border-blue-500" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Titik 2 -->
+                                <div class="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-3">
+                                    <h4 class="text-xs font-bold text-indigo-400 uppercase tracking-wide">Titik B (x2, y2)</h4>
+                                    <div class="grid grid-cols-2 gap-2 text-xs">
+                                        <div>
+                                            <label class="block text-slate-500 mb-1">x2</label>
+                                            <input type="number" id="input_x2" value="${scoreState.misi7_x2}" oninput="updateMisi7Calc()" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white focus:outline-none focus:border-blue-500" />
+                                        </div>
+                                        <div>
+                                            <label class="block text-slate-500 mb-1">y2</label>
+                                            <input type="number" id="input_y2" value="${scoreState.misi7_y2}" oninput="updateMisi7Calc()" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-white focus:outline-none focus:border-blue-500" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Perhitungan Live -->
+                            <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl text-center space-y-2">
+                                <div class="text-xs text-slate-500">Langkah Perhitungan Aljabar:</div>
+                                <div id="misi7_calc_process" class="text-sm font-mono text-slate-300">
+                                    <!-- Dynamic calculation layout -->
+                                </div>
+                                <div id="misi7_calc_result" class="text-lg font-bold text-emerald-400 mt-2">
+                                    <!-- Result will go here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            9: {
+                title: "Bentuk Eksplisit PGL",
+                subtitle: "Mengupas Persamaan y = mx + c",
+                icon: "fa-solid fa-circle-nodes",
+                render: () => `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div class="space-y-4">
+                            <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">Level 8</span>
+                            <h2 class="text-2xl font-extrabold text-white">Bentuk Eksplisit: $y = mx + c$</h2>
+                            <p class="text-slate-300 text-sm leading-relaxed">
+                                Ini adalah bentuk yang paling bersahabat dan mudah dipahami dalam persamaan garis lurus. Disebut <strong>Eksplisit</strong> karena variabel terikat $y$ dituliskan jelas di satu ruas tersendiri.
+                            </p>
+                            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2 text-xs">
+                                <p class="text-slate-300">Komponen Utama:</p>
+                                <ul class="space-y-1.5 text-slate-400">
+                                    <li><strong class="text-blue-400">$m$</strong> : Gradien (kemiringan garis).</li>
+                                    <li><strong class="text-indigo-400">$c$</strong> : Titik potong sumbu-Y (terjadi saat $x = 0$, yaitu titik $(0, c)$).</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-4">
+                            <h3 class="font-bold text-white text-sm">Contoh Analisis Visual:</h3>
+                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-3">
+                                <div class="text-sm font-bold text-slate-300">Garis: $y = 2x + 3$</div>
+                                <div class="text-xs text-slate-400 leading-relaxed">
+                                    Dari persamaan di atas kita langsung mengetahui:
+                                </div>
+                                <ul class="text-xs space-y-1.5 font-mono text-slate-300">
+                                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500"></i> Nilai gradien $m = 2$ (garis naik)</li>
+                                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-500"></i> Memotong sumbu-Y di titik $(0, 3)$</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            10: {
+                title: "Bentuk Implisit PGL",
+                subtitle: "Mengupas Persamaan Ax + By + C = 0",
+                icon: "fa-solid fa-puzzle-piece",
+                render: () => `
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">Level 9</span>
+                            <h2 class="text-2xl font-extrabold text-white">Bentuk Implisit: $Ax + By + C = 0$</h2>
+                        </div>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Terkadang persamaan ditulis dalam bentuk implisit, di mana semua suku berkumpul di satu ruas dan ruas lainnya sama dengan nol ($0$).
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4 flex flex-col justify-between">
+                                <div>
+                                    <h3 class="font-bold text-white text-sm">Rumus Cepat Gradien Bentuk Implisit:</h3>
+                                    <p class="text-xs text-slate-300 leading-relaxed">
+                                        Jika kita mengubah bentuk $Ax + By + C = 0$ ke bentuk $y = mx + c$, kita peroleh rumus instan mencari gradiennya:
+                                    </p>
+                                </div>
+                                <div class="bg-slate-950 p-4 rounded-xl text-center text-lg font-bold text-indigo-400">
+                                    $$m = -\\frac{A}{B}$$
+                                </div>
+                                <p class="text-[10px] text-slate-500">Syarat: Nilai B tidak boleh sama dengan 0!</p>
+                            </div>
+
+                            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+                                <h3 class="font-bold text-white text-sm">Contoh Penerapan:</h3>
+                                <p class="text-xs text-slate-300 leading-relaxed">
+                                    Diberikan garis $2x + y = 6$. Tentukan gradiennya!
+                                </p>
+                                <div class="bg-slate-950 p-4 rounded-xl text-xs space-y-2 text-slate-400 font-mono">
+                                    <p>• $A = 2$ (koefisien x)</p>
+                                    <p>• $B = 1$ (koefisien y)</p>
+                                    <p>• $$m = -\\frac{2}{1} = -2$$</p>
+                                    <p class="text-emerald-400 font-bold">• Gradien akhir: $m = -2$</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            11: {
+                title: "Lab Aljabar Transformasi Persamaan",
+                subtitle: "Ubah Bentuk Eksplisit Ke Implisit & Sebaliknya",
+                icon: "fa-solid fa-right-left",
+                render: () => `
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">Level 10</span>
+                            <h2 class="text-2xl font-extrabold text-white">Lab Aljabar Interaktif: Ubah Bentuk Garis</h2>
+                        </div>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Gunakan panel di bawah ini untuk melihat alur detail pergeseran ruas matematika dalam mengubah bentuk PGL:
+                        </p>
+
+                        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
+                            <div class="grid grid-cols-3 gap-3">
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-1">Koefisien A</label>
+                                    <input type="number" id="input11_a" value="${scoreState.misi11_a}" oninput="updateMisi11Calc()" class="w-full text-xs bg-slate-950 border border-slate-700 rounded p-2 text-white" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-1">Koefisien B</label>
+                                    <input type="number" id="input11_b" value="${scoreState.misi11_b}" oninput="updateMisi11Calc()" class="w-full text-xs bg-slate-950 border border-slate-700 rounded p-2 text-white" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-1">Konstanta C</label>
+                                    <input type="number" id="input11_c" value="${scoreState.misi11_c}" oninput="updateMisi11Calc()" class="w-full text-xs bg-slate-950 border border-slate-700 rounded p-2 text-white" />
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl text-center space-y-3">
+                                <div class="text-xs text-slate-400">Hasil Transformasi Bentuk Persamaan:</div>
+                                <div class="text-sm font-bold text-blue-400" id="misi11_equation_display"></div>
+                                <div class="text-xs text-slate-300 border-t border-slate-800/80 pt-3 space-y-1 font-mono text-left" id="misi11_steps_display"></div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            12: {
+                title: "Titik Potong Sumbu X",
+                subtitle: "Mencari Titik Potong Saat y = 0",
+                icon: "fa-solid fa-cut",
+                render: () => `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div class="space-y-4">
+                            <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">Level 11</span>
+                            <h2 class="text-2xl font-extrabold text-white">Mencari Titik Potong Sumbu-X</h2>
+                            <p class="text-slate-300 text-sm leading-relaxed">
+                                Garis lurus memotong sumbu mendatar (sumbu-X) tepat saat ketinggian garis tersebut sama dengan nol. Dengan kata lain, kita tinggal menyubstitusikan nilai $y = 0$ ke dalam persamaan.
+                            </p>
+                            
+                            <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-1">
+                                <span class="text-xs text-slate-500">Kunci Utama:</span>
+                                <p class="text-sm font-bold text-emerald-400 flex items-center gap-2">
+                                    <i class="fa-solid fa-star"></i> Atur nilai $y = 0$
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-4">
+                            <h3 class="font-bold text-white text-sm">Contoh Perhitungan:</h3>
+                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-2 text-xs font-mono">
+                                <p class="text-blue-400">Garis: $y = 3x - 12$</p>
+                                <p class="text-slate-500">Maka ubah y menjadi 0:</p>
+                                <div>$$0 = 3x - 12$$</div>
+                                <div>$$3x = 12$$</div>
+                                <div>$$x = 4$$</div>
+                                <p class="text-emerald-400 font-bold">Hasil: Titik potong sumbu-X adalah $(4, 0)$</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            13: {
+                title: "Titik Potong Sumbu Y",
+                subtitle: "Mencari Titik Potong Saat x = 0",
+                icon: "fa-solid fa-anchor",
+                render: () => `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div class="space-y-4">
+                            <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">Level 12</span>
+                            <h2 class="text-2xl font-extrabold text-white">Mencari Titik Potong Sumbu-Y</h2>
+                            <p class="text-slate-300 text-sm leading-relaxed">
+                                Kebalikan dari sumbu-X, garis lurus memotong sumbu tegak (sumbu-Y) tepat saat posisi mendatarnya di tengah, yaitu ketika nilai $x = 0$.
+                            </p>
+                            
+                            <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-1">
+                                <span class="text-xs text-slate-500">Kunci Utama:</span>
+                                <p class="text-sm font-bold text-indigo-400 flex items-center gap-2">
+                                    <i class="fa-solid fa-star"></i> Atur nilai $x = 0$
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-4">
+                            <h3 class="font-bold text-white text-sm">Contoh Perhitungan:</h3>
+                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-2 text-xs font-mono">
+                                <p class="text-blue-400">Garis: $y = 3x - 12$</p>
+                                <p class="text-slate-500">Maka ubah x menjadi 0:</p>
+                                <div>$$y = 3(0) - 12$$</div>
+                                <div>$$y = -12$$</div>
+                                <p class="text-emerald-400 font-bold">Hasil: Titik potong sumbu-Y adalah $(0, -12)$</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            14: {
+                title: "Cara Menggambar Garis Lurus",
+                subtitle: "3 Langkah Menghubungkan Garis",
+                icon: "fa-solid fa-pen-ruler",
+                render: () => `
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">Level 13</span>
+                            <h2 class="text-2xl font-extrabold text-white">Cara Menggambar PGL di Bidang Kartesius</h2>
+                        </div>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Menggambar garis lurus di whiteboard atau kertas berpetak sangatlah mudah jika kamu tahu kuncinya. Kita hanya butuh **minimal dua buah titik bantu**.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
+                                <div class="text-blue-400 font-extrabold text-lg">Langkah 1</div>
+                                <h4 class="font-bold text-white text-sm">Cari Titik Potong Sumbu X</h4>
+                                <p class="text-xs text-slate-400 leading-relaxed">Substitusikan nilai $y = 0$ untuk mendapat koordinat pertama $(x, 0)$.</p>
+                            </div>
+                            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
+                                <div class="text-indigo-400 font-extrabold text-lg">Langkah 2</div>
+                                <h4 class="font-bold text-white text-sm">Cari Titik Potong Sumbu Y</h4>
+                                <p class="text-xs text-slate-400 leading-relaxed">Substitusikan nilai $x = 0$ untuk mendapat koordinat kedua $(0, y)$.</p>
+                            </div>
+                            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-2">
+                                <div class="text-emerald-400 font-extrabold text-lg">Langkah 3</div>
+                                <h4 class="font-bold text-white text-sm">Tarik Garis Hubung</h4>
+                                <p class="text-xs text-slate-400 leading-relaxed">Plot kedua titik koordinat tersebut pada bidang Kartesius lalu hubungkan keduanya menggunakan penggaris!</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            15: {
+                title: "Konstruksi Garis: Titik & Gradien",
+                subtitle: "Menyusun Rumus PGL Jenis I",
+                icon: "fa-solid fa-shapes",
+                render: () => `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div class="space-y-4">
+                            <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">Level 14</span>
+                            <h2 class="text-2xl font-extrabold text-white">Menyusun Garis Dari 1 Titik & Gradien</h2>
+                            <p class="text-slate-300 text-sm leading-relaxed">
+                                Jika sebuah garis memiliki kemiringan $m$ dan melewati satu titik koordinat tertentu yaitu $(x_1, y_1)$, kita bisa menyusun persamaan garisnya secara aljabar dengan rumus:
+                            </p>
+                            <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl text-center text-lg font-bold text-blue-400">
+                                $$y - y_1 = m(x - x_1)$$
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-4">
+                            <h3 class="font-bold text-white text-sm">Contoh Kasus & Penyelesaian:</h3>
+                            <p class="text-xs text-slate-300">
+                                Cari persamaan garis melalui $(0, 5)$ dengan gradien $-2$!
+                            </p>
+                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-2 text-xs font-mono">
+                                <p class="text-slate-500">• Diketahui: $x_1 = 0, y_1 = 5, m = -2$</p>
+                                <div>$$y - 5 = -2(x - 0)$$</div>
+                                <div>$$y - 5 = -2x$$</div>
+                                <p class="text-emerald-400 font-bold">Hasil: $y = -2x + 5$</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            16: {
+                title: "Konstruksi Garis: Dua Titik Koordinat",
+                subtitle: "Menyusun Rumus PGL Jenis II",
+                icon: "fa-solid fa-vector-square",
+                render: () => `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div class="space-y-4">
+                            <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">Level 15</span>
+                            <h2 class="text-2xl font-extrabold text-white">Menyusun Garis Dari Dua Titik</h2>
+                            <p class="text-slate-300 text-sm leading-relaxed">
+                                Bagaimana jika kita tidak memiliki nilai gradien, melainkan hanya diberi koordinat dua titik saja $(x_1, y_1)$ dan $(x_2, y_2)$? Kita gunakan rumus perbandingan senilai berikut:
+                            </p>
+                            <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl text-center text-base font-bold text-indigo-400">
+                                $$\\frac{y - y_1}{y_2 - y_1} = \\frac{x - x_1}{x_2 - x_1}$$
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-4">
+                            <h3 class="font-bold text-white text-sm">Contoh Penyelesaian:</h3>
+                            <p class="text-xs text-slate-300">
+                                Garis melalui titik $(1, 2)$ dan $(3, 6)$.
+                            </p>
+                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-2 text-xs font-mono">
+                                <div>$$\\frac{y - 2}{6 - 2} = \\frac{x - 1}{3 - 1}$$</div>
+                                <div>$$\\frac{y - 2}{4} = \\frac{x - 1}{2}$$</div>
+                                <div>$$2(y - 2) = 4(x - 1)$$</div>
+                                <div>$$2y - 4 = 4x - 4 \\rightarrow 2y = 4x$$</div>
+                                <p class="text-emerald-400 font-bold">Hasil: $y = 2x$</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            17: {
+                title: "Misteri Garis Sejajar",
+                subtitle: "Hubungan Gradien Garis Sejajar",
+                icon: "fa-solid fa-grip-lines",
+                render: () => `
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">Level 16</span>
+                            <h2 class="text-2xl font-extrabold text-white">Hubungan Dua Garis Sejajar</h2>
+                        </div>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Dua garis lurus dikatakan sejajar apabila kedua garis tersebut memiliki tingkat kemiringan yang sama persis dan tidak akan pernah berpotongan meskipun diperpanjang tanpa batas.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4 flex flex-col justify-between">
+                                <div>
+                                    <h3 class="font-bold text-white text-sm flex items-center gap-2 mb-2">
+                                        <i class="fa-solid fa-scale-balanced text-emerald-400"></i> Aturan Gradien Sejajar:
+                                    </h3>
+                                    <p class="text-xs text-slate-300 leading-relaxed">
+                                        Garis pertama ($l_1$) sejajar dengan garis kedua ($l_2$) jika dan hanya jika gradien keduanya bernilai setara:
+                                    </p>
+                                </div>
+                                <div class="bg-slate-950 p-4 rounded-xl text-center text-xl font-bold text-emerald-400">
+                                    $$m_1 = m_2$$
+                                </div>
+                            </div>
+
+                            <!-- Illustration SVG -->
+                            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col items-center justify-center">
+                                <svg class="w-full max-w-[150px] bg-slate-950 border border-slate-850 rounded-xl" viewBox="0 0 100 80">
+                                    <line x1="10" y1="65" x2="80" y2="25" stroke="#10b981" stroke-width="2.5" />
+                                    <line x1="25" y1="75" x2="95" y2="35" stroke="#3b82f6" stroke-width="2.5" />
+                                    <text x="35" y="35" fill="#10b981" font-size="7">Garis 1 (m1)</text>
+                                    <text x="50" y="65" fill="#3b82f6" font-size="7">Garis 2 (m2)</text>
+                                </svg>
+                                <span class="text-[11px] text-slate-400 mt-2 font-mono">Kemiringan seragam (sejajar)</span>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            18: {
+                title: "Misteri Garis Tegak Lurus",
+                subtitle: "Hubungan Gradien Garis Tegak Lurus",
+                icon: "fa-solid fa-arrows-turn-to-dots",
+                render: () => `
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">Level 17</span>
+                            <h2 class="text-2xl font-extrabold text-white">Hubungan Dua Garis Tegak Lurus</h2>
+                        </div>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Dua garis saling tegak lurus apabila keduanya berpotongan membentuk sudut siku-siku ($90^\\circ$). Hubungan gradiennya sangat unik!
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4 flex flex-col justify-between">
+                                <div>
+                                    <h3 class="font-bold text-white text-sm flex items-center gap-2 mb-2">
+                                        <i class="fa-solid fa-compress text-rose-400"></i> Aturan Gradien Tegak Lurus:
+                                    </h3>
+                                    <p class="text-xs text-slate-300 leading-relaxed">
+                                        Hasil perkalian kedua gradien garis tersebut akan selalu menghasilkan nilai minus satu ($-1$):
+                                    </p>
+                                </div>
+                                <div class="bg-slate-950 p-4 rounded-xl text-center text-xl font-bold text-rose-400">
+                                    $$m_1 \\cdot m_2 = -1$$
+                                </div>
+                            </div>
+
+                            <!-- Illustration SVG -->
+                            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col items-center justify-center">
+                                <svg class="w-full max-w-[150px] bg-slate-950 border border-slate-850 rounded-xl" viewBox="0 0 100 80">
+                                    <!-- Line 1 -->
+                                    <line x1="15" y1="65" x2="85" y2="15" stroke="#3b82f6" stroke-width="2" />
+                                    <!-- Line 2 (Perpendicular) -->
+                                    <line x1="20" y1="15" x2="70" y2="65" stroke="#ef4444" stroke-width="2" />
+                                    <!-- Right angle indicator -->
+                                    <polygon points="48,36 44,40 48,44 52,40" fill="none" stroke="#64748b" stroke-width="1"/>
+                                </svg>
+                                <span class="text-[11px] text-slate-400 mt-2 font-mono">Saling Berpotongan Siku-Siku (90°)</span>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            19: {
+                title: "Detektor Hubungan Garis",
+                subtitle: "Uji Posisi 2 Buah Garis Secara Instan",
+                icon: "fa-solid fa-radar",
+                render: () => `
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">Level 18</span>
+                            <h2 class="text-2xl font-extrabold text-white">Analisis Hubungan Dua Persamaan Garis</h2>
+                        </div>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Ketika dihadapi dengan dua persamaan garis berbeda, kita dapat mengklasifikasikan hubungannya ke dalam salah satu kondisi berikut:
+                        </p>
+                        
+                        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4 text-xs">
+                            <div class="grid grid-cols-2 gap-3 text-slate-300">
+                                <div class="bg-slate-950 p-3 rounded border border-slate-800">
+                                    <strong class="text-emerald-400 block mb-1">1. Sejajar</strong>
+                                    Gradien sama, Konstanta beda. <br> $m_1 = m_2, c_1 \\neq c_2$
+                                </div>
+                                <div class="bg-slate-950 p-3 rounded border border-slate-800">
+                                    <strong class="text-rose-400 block mb-1">2. Tegak Lurus</strong>
+                                    Perkalian gradien = -1. <br> $m_1 \\cdot m_2 = -1$
+                                </div>
+                                <div class="bg-slate-950 p-3 rounded border border-slate-800">
+                                    <strong class="text-blue-400 block mb-1">3. Berhimpit</strong>
+                                    Gradien & konstanta sama persis. <br> $m_1 = m_2, c_1 = c_2$
+                                </div>
+                                <div class="bg-slate-950 p-3 rounded border border-slate-800">
+                                    <strong class="text-amber-400 block mb-1">4. Berpotongan Biasa</strong>
+                                    Gradien berbeda sembarang. <br> $m_1 \\neq m_2$
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            20: {
+                title: "Aplikasi Nyata I: Tarif Taksi / Ojol",
+                subtitle: "Analisis Struktur Tarif Linear",
+                icon: "fa-solid fa-taxi",
+                render: () => `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div class="space-y-4">
+                            <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">Level 19</span>
+                            <h2 class="text-2xl font-extrabold text-white">Tarif Taksi & Aplikasi PGL</h2>
+                            <p class="text-slate-300 text-sm leading-relaxed">
+                                Pernahkah kamu memperhatikan strukur argo taksi? Ada **tarif buka pintu** (tetap) dan biaya tambahan per kilometer. Ini adalah bentuk murni dari $y = mx + c$!
+                            </p>
+                            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl text-xs space-y-1.5 text-slate-400">
+                                <p><strong class="text-white">x</strong> : Jarak tempuh (Variabel bebas / Km)</p>
+                                <p><strong class="text-white">y</strong> : Total biaya (Variabel terikat / Rupiah)</p>
+                                <p><strong class="text-blue-400">$m$</strong> : Tarif per kilometer (Gradien)</p>
+                                <p><strong class="text-indigo-400">$c$</strong> : Tarif buka pintu (Konstanta awal)</p>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Simulator Card -->
+                        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+                            <h4 class="font-bold text-white text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-calculator text-blue-500"></i> Simulator Tarif Taksi
+                            </h4>
+                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-3 text-xs">
+                                <p class="text-slate-300 font-medium">Contoh Aturan Tarif Taksi:</p>
+                                <ul class="list-disc list-inside text-slate-400 space-y-1 font-mono">
+                                    <li>Tarif Awal (c) = Rp10.000</li>
+                                    <li>Tarif per Km (m) = Rp4.500</li>
+                                </ul>
+                                <div class="border-t border-slate-800/80 pt-3">
+                                    <label class="block text-slate-400 mb-1">Berapa kilometer (x)?</label>
+                                    <input type="number" id="input_taxi_km" value="12" oninput="calcTaxiFare()" class="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-white focus:outline-none focus:border-blue-500 text-xs font-mono" />
+                                </div>
+                                <div class="bg-blue-950/40 p-3 rounded border border-blue-500/20 text-center font-bold text-sm text-blue-400" id="taxi_fare_result">
+                                    Total Biaya: Rp64.000
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            21: {
+                title: "Aplikasi Nyata II: Depresiasi Aset",
+                subtitle: "Analisis Penurunan Nilai Linear",
+                icon: "fa-solid fa-arrow-trend-down",
+                render: () => `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div class="space-y-4">
+                            <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">Level 20</span>
+                            <h2 class="text-2xl font-extrabold text-white">Penyusutan Nilai Aset (Depresiasi)</h2>
+                            <p class="text-slate-300 text-sm leading-relaxed">
+                                Barang elektronik seperti tablet atau smartphone akan berkurang nilainya setiap tahun karena pemakaian. Penurunan nilai ini sering dipetakan secara linear menggunakan persamaan garis dengan **gradien negatif**!
+                            </p>
+                        </div>
+
+                        <!-- Real Case study Box -->
+                        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+                            <h4 class="font-bold text-white text-sm">Studi Kasus Pembelian Tablet:</h4>
+                            <div class="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-3 text-xs">
+                                <ul class="space-y-1 text-slate-300">
+                                    <li>• Harga Beli Awal ($c$) = <span class="font-bold text-white">Rp4.000.000</span></li>
+                                    <li>• Penyusutan per Tahun ($m$) = <span class="font-bold text-rose-400">-Rp500.000</span></li>
+                                </ul>
+                                <div class="border-t border-slate-800/80 pt-2.5 font-mono text-slate-400">
+                                    <p>Persamaan PGL:</p>
+                                    <div class="text-blue-400 text-center py-2 font-bold text-sm">$$y = -500.000x + 4.000.000$$</div>
+                                    <div class="bg-slate-900/80 p-2.5 rounded border border-slate-800">
+                                        <p class="text-slate-300">Setelah 4 Tahun ($x = 4$):</p>
+                                        <p class="text-emerald-400 font-bold text-center mt-1">y = Rp2.000.000</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            22: {
+                title: "Aplikasi Nyata III: Radar & Jalur Pesawat",
+                subtitle: "Navigasi Udara yang Presisi",
+                icon: "fa-solid fa-plane",
+                render: () => `
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">Level 21</span>
+                            <h2 class="text-2xl font-extrabold text-white">Sistem Navigasi Udara Pesawat Terbang</h2>
+                        </div>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Pesawat komersial memerlukan jalur penerbangan lurus saat lepas landas (*take-off*) demi kestabilan. Jalur lepas landas tersebut direpresentasikan sebagai garis lurus pada sumbu ketinggian terhadap jarak mendatar bandara.
+                        </p>
+                        
+                        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col md:flex-row items-center gap-6">
+                            <div class="flex-1 space-y-3">
+                                <h4 class="font-bold text-white text-sm">Studi Kasus Lepas Landas:</h4>
+                                <p class="text-xs text-slate-400 leading-relaxed">
+                                    Sebuah pesawat naik dengan gradien ketinggian $m = 0.15$. Artinya setiap pesawat terbang maju sejauh **100 meter mendatar**, pesawat akan bertambah tinggi sebanyak **15 meter**.
+                                </p>
+                                <div class="bg-slate-950 p-3 rounded border border-slate-800 text-xs font-mono text-slate-300">
+                                    Ketinggian Akhir = (0.15 × Jarak Mendatar) + Ketinggian Awal Bandara
+                                </div>
+                            </div>
+                            
+                            <!-- Plane takeoff graphic -->
+                            <svg class="w-full max-w-[220px] bg-slate-950 border border-slate-850 rounded-xl" viewBox="0 0 120 70">
+                                <line x1="10" y1="60" x2="110" y2="20" stroke="#3b82f6" stroke-width="2.5" />
+                                <line x1="10" y1="60" x2="110" y2="60" stroke="#475569" stroke-width="1.5" stroke-dasharray="2" />
+                                <text x="60" y="30" fill="#3b82f6" font-size="7" font-weight="bold" transform="rotate(-21, 60, 30)">Garis Lepas Landas (m = 0.15)</text>
+                                <text x="110" y="66" fill="#94a3b8" font-size="5" text-anchor="end">Jarak Mendatar (X)</text>
+                                <text x="8" y="18" fill="#94a3b8" font-size="5">Tinggi (Y)</text>
+                            </svg>
+                        </div>
+                    </div>
+                `
+            },
+            23: {
+                title: "Live Interactive Line Simulator",
+                subtitle: "Mainkan Gradien (m) & Perpotongan (c) secara Live!",
+                icon: "fa-solid fa-gamepad",
+                render: () => `
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">Level 22</span>
+                            <h2 class="text-2xl font-extrabold text-white">Live Cartesian Graph Simulator</h2>
+                        </div>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Gunakan slider di bawah ini untuk menggeser kemiringan ($m$) dan posisi perpotongan ($c$) garis secara langsung di grafik!
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center bg-slate-900 border border-slate-800 rounded-2xl p-5">
+                            <!-- Left: Interactive sliders -->
+                            <div class="space-y-5 text-sm">
+                                <div class="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-3">
+                                    <div class="flex justify-between font-bold">
+                                        <span class="text-slate-400">Gradien ($m$)</span>
+                                        <span id="slider-m-val" class="text-blue-400 font-mono">1</span>
+                                    </div>
+                                    <input type="range" id="slider-m" min="-3" max="3" step="0.5" value="${scoreState.simulatorM}" oninput="updateSimulator()" class="w-full accent-blue-500 cursor-pointer" />
+                                    <p class="text-[10px] text-slate-500 leading-normal">Mengontrol kemiringan garis. m positif membuat garis mendaki ke kanan, m negatif membuat garis menurun.</p>
+                                </div>
+                                <div class="bg-slate-950 p-4 rounded-xl border border-slate-850 space-y-3">
+                                    <div class="flex justify-between font-bold">
+                                        <span class="text-slate-400">Konstanta ($c$)</span>
+                                        <span id="slider-c-val" class="text-indigo-400 font-mono">0</span>
+                                    </div>
+                                    <input type="range" id="slider-c" min="-50" max="50" step="10" value="${scoreState.simulatorC}" oninput="updateSimulator()" class="w-full accent-indigo-500 cursor-pointer" />
+                                    <p class="text-[10px] text-slate-500 leading-normal">Mengontrol tinggi rendahnya garis memotong sumbu vertical-Y.</p>
+                                </div>
+                                <div class="text-center py-2.5 bg-slate-950 rounded border border-slate-850">
+                                    <span class="text-xs text-slate-400">Persamaan Garis Saat Ini:</span>
+                                    <div id="simulator-equation" class="text-lg font-bold text-emerald-400 mt-1 font-mono"></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Right: Live Canvas Grid -->
+                            <div class="flex justify-center p-3 bg-slate-950 rounded-xl border border-slate-850">
+                                <canvas id="sim-canvas" width="220" height="220" class="bg-[#030712] rounded-lg"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            24: {
+                title: "Ujian Detektif PGL",
+                subtitle: "Kuis Pilihan Ganda Interaktif",
+                icon: "fa-solid fa-graduation-cap",
+                render: () => `
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">Level 23</span>
+                            <h2 class="text-2xl font-extrabold text-white">Misi Ujian Kompetensi Detektif</h2>
+                        </div>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Selesaikan 3 soal pilihan ganda di bawah ini dengan memilih jawaban yang tepat untuk menguji pemahaman akhirmu!
+                        </p>
+                        
+                        <div class="space-y-4 text-xs" id="quiz-container">
+                            <!-- Question 1 -->
+                            <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
+                                <p class="font-bold text-white text-sm">1. Tentukan gradien dari persamaan garis implisit $3x - 2y = 6$!</p>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                    <button onclick="answerQuiz(1, 'A')" id="q1-A" class="quiz-btn text-left p-2.5 rounded bg-slate-950 border border-slate-800 hover:border-blue-500/50 text-slate-300 transition-all">A. <span class="font-mono">3/2</span></button>
+                                    <button onclick="answerQuiz(1, 'B')" id="q1-B" class="quiz-btn text-left p-2.5 rounded bg-slate-950 border border-slate-800 hover:border-blue-500/50 text-slate-300 transition-all">B. <span class="font-mono">-3/2</span></button>
+                                    <button onclick="answerQuiz(1, 'C')" id="q1-C" class="quiz-btn text-left p-2.5 rounded bg-slate-950 border border-slate-800 hover:border-blue-500/50 text-slate-300 transition-all">C. <span class="font-mono">2/3</span></button>
+                                </div>
+                            </div>
+                            <!-- Question 2 -->
+                            <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
+                                <p class="font-bold text-white text-sm">2. Garis m melalui titik $(1, 3)$ dan tegak lurus garis $y = -\\frac{1}{2}x + 4$. Apa persamaan garis m?</p>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                    <button onclick="answerQuiz(2, 'A')" id="q2-A" class="quiz-btn text-left p-2.5 rounded bg-slate-950 border border-slate-800 hover:border-blue-500/50 text-slate-300 transition-all">A. <span class="font-mono">y = -2x + 5</span></button>
+                                    <button onclick="answerQuiz(2, 'B')" id="q2-B" class="quiz-btn text-left p-2.5 rounded bg-slate-950 border border-slate-800 hover:border-blue-500/50 text-slate-300 transition-all">B. <span class="font-mono">y = 2x + 1</span></button>
+                                    <button onclick="answerQuiz(2, 'C')" id="q2-C" class="quiz-btn text-left p-2.5 rounded bg-slate-950 border border-slate-800 hover:border-blue-500/50 text-slate-300 transition-all">C. <span class="font-mono">y = 2x - 1</span></button>
+                                </div>
+                            </div>
+                            <!-- Question 3 -->
+                            <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
+                                <p class="font-bold text-white text-sm">3. Jika dua garis sejajar, maka hubungan nilai gradien $m_1$ dan $m_2$ adalah...</p>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                    <button onclick="answerQuiz(3, 'A')" id="q3-A" class="quiz-btn text-left p-2.5 rounded bg-slate-950 border border-slate-800 hover:border-blue-500/50 text-slate-300 transition-all">A. <span class="font-mono">m_1 \\cdot m_2 = -1</span></button>
+                                    <button onclick="answerQuiz(3, 'B')" id="q3-B" class="quiz-btn text-left p-2.5 rounded bg-slate-950 border border-slate-800 hover:border-blue-500/50 text-slate-300 transition-all">B. <span class="font-mono">m_1 = m_2</span></button>
+                                    <button onclick="answerQuiz(3, 'C')" id="q3-C" class="quiz-btn text-left p-2.5 rounded bg-slate-950 border border-slate-800 hover:border-blue-500/50 text-slate-300 transition-all">C. <span class="font-mono">m_1 + m_2 = 0</span></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            25: {
+                title: "Rangkuman & Refleksi Mandiri",
+                subtitle: "Ringkasan Rumus & Konsep Penting",
+                icon: "fa-solid fa-bookmark",
+                render: () => `
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider">Level 24</span>
+                            <h2 class="text-2xl font-extrabold text-white">Lembar Rangkuman & Refleksi</h2>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Summary Table -->
+                            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+                                <h3 class="font-bold text-white text-xs uppercase tracking-wider flex items-center gap-1.5">
+                                    <i class="fa-solid fa-list-check text-blue-400"></i> Cheat-Sheet Rumus PGL
+                                </h3>
+                                <div class="text-xs space-y-2.5 text-slate-300">
+                                    <div class="flex justify-between bg-slate-950/40 p-2 rounded border border-slate-850">
+                                        <span>Gradien 2 Titik:</span>
+                                        <span class="text-blue-400">$$m = \\frac{y_2-y_1}{x_2-x_1}$$</span>
+                                    </div>
+                                    <div class="flex justify-between bg-slate-950/40 p-2 rounded border border-slate-850">
+                                        <span>Persamaan Umum:</span>
+                                        <span class="text-blue-400">$y = mx + c$</span>
+                                    </div>
+                                    <div class="flex justify-between bg-slate-950/40 p-2 rounded border border-slate-850">
+                                        <span>Garis Sejajar:</span>
+                                        <span class="text-blue-400">$m_1 = m_2$</span>
+                                    </div>
+                                    <div class="flex justify-between bg-slate-950/40 p-2 rounded border border-slate-850">
+                                        <span>Garis Tegak Lurus:</span>
+                                        <span class="text-blue-400">$m_1 \\cdot m_2 = -1$</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Reflection text block -->
+                            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 flex flex-col justify-between">
+                                <h3 class="font-bold text-white text-xs uppercase tracking-wider">Refleksi Belajar</h3>
+                                <p class="text-xs text-slate-300 leading-relaxed">
+                                    "Kamu telah menelusuri seluk-beluk koordinat, gradien, hubungan garis, hingga studi kasus nyata. Luar biasa perjuanganmu, Agen!"
+                                </p>
+                                <div class="bg-slate-950 p-3 rounded-lg border border-slate-850 text-[11px] text-slate-400 leading-relaxed">
+                                    <i class="fa-solid fa-lightbulb text-amber-500 mr-1.5 animate-pulse"></i>
+                                    <strong>Tips Sukses:</strong> Selalu periksa tanda negatif (-) aljabar saat memindahkan ruas koordinat.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            26: {
+                title: "Sertifikat Kelulusan Detektif",
+                subtitle: "Klaim Penghargaan Atas Prestasimu!",
+                icon: "fa-solid fa-award",
+                render: () => `
+                    <div class="text-center space-y-6">
+                        <div class="inline-flex p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-full text-emerald-400">
+                            <i class="fa-solid fa-trophy text-5xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-extrabold text-white">Selamat! Misi Selesai Dengan Gemilang!</h2>
+                        <p class="text-slate-300 text-sm max-w-xl mx-auto leading-relaxed">
+                            Agen Anindya telah membuktikan integritas berpikir logis dan pemecahan masalah yang luar biasa untuk menguasai materi Persamaan Garis Lurus (PGL).
+                        </p>
+
+                        <!-- Input Name for Certificate -->
+                        <div class="max-w-md mx-auto bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4">
+                            <label class="block text-slate-400 text-xs font-bold text-left uppercase">Masukkan Namamu Untuk Sertifikat:</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="cert-name-input" placeholder="Nama Lengkapmu..." value="${scoreState.certificateName}" oninput="updateCertificateName()" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:border-emerald-500 font-medium" />
+                                <button onclick="printCertificate()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-sm font-bold transition-all flex items-center gap-1.5 shadow-lg shadow-emerald-500/20">
+                                    <i class="fa-solid fa-print"></i> Cetak
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Live Certificate Display Frame -->
+                        <div id="certificate-frame" class="max-w-xl mx-auto bg-slate-950 border-4 border-double border-amber-500/50 p-8 rounded-2xl shadow-2xl relative overflow-hidden text-center select-none">
+                            <div class="absolute -right-8 -bottom-8 opacity-5 text-amber-500">
+                                <i class="fa-solid fa-shield-halved text-9xl"></i>
+                            </div>
+                            <span class="text-amber-500 text-[10px] tracking-widest font-bold block mb-1">PIAGAM PENGHARGAAN RESMI</span>
+                            <h3 class="text-xs text-slate-400 italic">Diberikan secara terhormat kepada:</h3>
+                            <h4 id="cert-display-name" class="text-2xl font-extrabold text-emerald-400 tracking-wide uppercase my-3 font-mono">AGEN ANINDYA</h4>
+                            <p class="text-[11px] text-slate-400 max-w-sm mx-auto leading-relaxed">
+                                Atas keberhasilannya memecahkan misteri, manipulasi, dan aplikasi Persamaan Garis Lurus dalam 25 level pembelajaran digital.
+                            </p>
+                            <div class="border-t border-slate-800/80 my-4"></div>
+                            <div class="flex justify-between items-center text-[10px] text-slate-500 font-bold px-4">
+                                <div>TANGGAL KELULUSAN<br><span class="text-slate-400">13 Juni 2026</span></div>
+                                <div class="text-amber-500">
+                                    <i class="fa-solid fa-certificate text-lg"></i><br>ALGONOVA ACADEMY
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            }
+        };
+
+        // Initialize state, generate sidebar menu, render first page
+        window.onload = function() {
+            generateSidebar();
+            renderPage(currentPage);
+            updateProgressBar();
+        };
+
+        // Generate Sidebar Menu Dynamically
+        function generateSidebar() {
+            const container = document.getElementById('chapter-list-container');
+            container.innerHTML = "";
+            for (let i = 1; i <= TOTAL_PAGES; i++) {
+                const page = PAGES[i];
+                const isCompleted = completedPages.includes(i);
+                const isActive = (currentPage === i);
+                
+                let statusIcon = '<i class="fa-regular fa-circle text-slate-600"></i>';
+                if (isCompleted) statusIcon = '<i class="fa-solid fa-circle-check text-emerald-500"></i>';
+                if (isActive) statusIcon = '<i class="fa-solid fa-location-crosshairs text-blue-500 animate-spin"></i>';
+
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left p-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-all border ${
+                    isActive 
+                    ? 'bg-blue-600/10 border-blue-500/40 text-blue-400 font-extrabold shadow-inner shadow-blue-500/5' 
+                    : 'border-transparent text-slate-400 hover:bg-slate-900 hover:text-slate-200'
+                }`;
+                btn.onclick = () => selectPage(i);
+                btn.innerHTML = `
+                    <span class="flex items-center gap-2.5 overflow-hidden">
+                        <span class="w-5 text-center flex items-center justify-center shrink-0 text-slate-500">${i}</span>
+                        <i class="${page.icon} text-[13px] ${isActive ? 'text-blue-400' : 'text-slate-500'}"></i>
+                        <span class="truncate">${page.title}</span>
+                    </span>
+                    <span class="shrink-0 pl-1">${statusIcon}</span>
+                `;
+                container.appendChild(btn);
+            }
+        }
+
+        // Selected page change hander
+        function selectPage(pageNum) {
+            currentPage = pageNum;
+            // Mark as completed
+            if (!completedPages.includes(pageNum)) {
+                completedPages.push(pageNum);
+                localStorage.setItem('detektif_pgl_completed', JSON.stringify(completedPages));
+            }
+            generateSidebar();
+            renderPage(currentPage);
+            updateProgressBar();
+            
+            // Hide mobile sidebar on selection
+            const sidebar = document.getElementById('sidebar');
+            const chapterList = document.getElementById('chapter-list-container');
+            if (window.innerWidth < 1024) {
+                chapterList.classList.add('hidden');
+            }
+        }
+
+        // Render Page Contents & Setup KaTeX / Canvas / Interactive listeners
+        function renderPage(pageNum) {
+            const page = PAGES[pageNum];
+            const wrapper = document.getElementById('page-content-wrapper');
+            
+            // Render content
+            wrapper.innerHTML = `
+                <div class="border-b border-slate-900 pb-5 mb-6">
+                    <span class="text-xs text-blue-500 uppercase tracking-widest font-extrabold monospace">Misi Ke-${pageNum} dari ${TOTAL_PAGES}</span>
+                    <h3 class="text-2xl font-extrabold text-white mt-1 flex items-center gap-2">
+                        <i class="${page.icon} text-blue-500 text-lg"></i> ${page.title}
+                    </h3>
+                    <p class="text-slate-400 text-xs mt-1.5">${page.subtitle}</p>
+                </div>
+                <div class="py-1">
+                    ${page.render()}
+                </div>
+            `;
+
+            // Update footer info
+            document.getElementById('current-page-display').innerText = pageNum;
+            document.getElementById('btn-prev').disabled = (pageNum === 1);
+            document.getElementById('btn-next').innerText = (pageNum === TOTAL_PAGES) ? "Kembali ke Beranda" : "Misi Berikutnya";
+            
+            // Fire KaTeX to render LaTeX
+            renderLaTeX();
+
+            // Setup custom listeners for interactive pages
+            if (pageNum === 8) {
+                updateMisi7Calc();
+            } else if (pageNum === 11) {
+                updateMisi11Calc();
+            } else if (pageNum === 20) {
+                calcTaxiFare();
+            } else if (pageNum === 23) {
+                initCanvas();
+                updateSimulator();
+            } else if (pageNum === 24) {
+                restoreQuizAnswers();
+            } else if (pageNum === 26) {
+                updateCertificateName();
+            }
+        }
+
+        // Render equations beautifully with KaTeX Auto-Render
+        function renderLaTeX() {
+            const wrapper = document.getElementById('page-content-wrapper');
+            if (wrapper && typeof renderMathInElement === 'function') {
+                renderMathInElement(wrapper, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ],
+                    throwOnError: false
+                });
+            }
+        }
+
+        // Next and Prev Page flow
+        function nextPage() {
+            if (currentPage < TOTAL_PAGES) {
+                selectPage(currentPage + 1);
+            } else {
+                selectPage(1); // loop back
+            }
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                selectPage(currentPage - 1);
+            }
+        }
+
+        // Update progress bar
+        function updateProgressBar() {
+            const percentage = Math.round((completedPages.length / TOTAL_PAGES) * 100);
+            document.getElementById('progress-percentage').innerText = `${percentage}%`;
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+        }
+
+        // Toggle mobile sidebar
+        function toggleMobileSidebar() {
+            const chapterList = document.getElementById('chapter-list-container');
+            const icon = document.getElementById('mobile-toggle-icon');
+            if (chapterList.classList.contains('hidden')) {
+                chapterList.classList.remove('hidden');
+                icon.className = "fa-solid fa-xmark";
+            } else {
+                chapterList.classList.add('hidden');
+                icon.className = "fa-solid fa-bars";
+            }
+        }
+
+        // Reset Mission state
+        function resetMisi() {
+            completedPages = [1];
+            localStorage.removeItem('detektif_pgl_completed');
+            scoreState = {
+                misi7_x1: 2, misi7_y1: 3, misi7_x2: 5, misi7_y2: 9,
+                misi11_a: 3, misi11_b: -4, misi11_c: 12,
+                calcGradResult: "",
+                quizResponses: {},
+                certificateName: "",
+                simulatorM: 1,
+                simulatorC: 0
+            };
+            selectPage(1);
+        }
+
+        // --- INTERACTIVE MATH FUNCTIONS FOR LEVEL PAGES ---
+
+        // Level 7: Gradien Calculator Logic
+        function updateMisi7Calc() {
+            const x1 = parseFloat(document.getElementById('input_x1').value) || 0;
+            const y1 = parseFloat(document.getElementById('input_y1').value) || 0;
+            const x2 = parseFloat(document.getElementById('input_x2').value) || 0;
+            const y2 = parseFloat(document.getElementById('input_y2').value) || 0;
+
+            scoreState.misi7_x1 = x1;
+            scoreState.misi7_y1 = y1;
+            scoreState.misi7_x2 = x2;
+            scoreState.misi7_y2 = y2;
+
+            const processEl = document.getElementById('misi7_calc_process');
+            const resultEl = document.getElementById('misi7_calc_result');
+
+            if (x2 - x1 === 0) {
+                processEl.innerText = `m = ( ${y2} - ${y1} ) / ( ${x2} - ${x1} )`;
+                resultEl.innerHTML = `<span class="text-red-400">Gradien Tidak Terdefinisi (Garis Vertikal Sempurna!)</span>`;
+                return;
+            }
+
+            const dy = y2 - y1;
+            const dx = x2 - x1;
+            const mVal = dy / dx;
+
+            processEl.innerText = `m = ( ${y2} - ${y1} ) / ( ${x2} - ${x1} )  =>  m = ${dy} / ${dx}`;
+            resultEl.innerHTML = `Gradien Akhir: m = <span class="text-emerald-400 underline font-extrabold">${mVal.toFixed(2)}</span>`;
+        }
+
+        // Level 10: Form Transfomer Logic
+        function updateMisi11Calc() {
+            const a = parseFloat(document.getElementById('input11_a').value) || 0;
+            const b = parseFloat(document.getElementById('input11_b').value) || 0;
+            const c = parseFloat(document.getElementById('input11_c').value) || 0;
+
+            scoreState.misi11_a = a;
+            scoreState.misi11_b = b;
+            scoreState.misi11_c = c;
+
+            const equationDisplay = document.getElementById('misi11_equation_display');
+            const stepsDisplay = document.getElementById('misi11_steps_display');
+
+            // Format formula display
+            let axTerm = a !== 0 ? `${a}x` : '';
+            let byTerm = b !== 0 ? (b > 0 ? ` + ${b}y` : ` - ${Math.abs(b)}y`) : '';
+            let cTerm = c !== 0 ? (c > 0 ? ` + ${c}` : ` - ${Math.abs(c)}`) : '';
+            
+            let implicitStr = `${axTerm}${byTerm}${cTerm} = 0`;
+            equationDisplay.innerText = `Bentuk Implisit: ${implicitStr}`;
+
+            if (b === 0) {
+                stepsDisplay.innerHTML = `<p class="text-red-400">Perhatian: B bernilai 0. Garis vertikal tidak dapat ditransformasi ke bentuk eksplisit y = mx + c.</p>`;
+                return;
+            }
+
+            const mVal = -a / b;
+            const cVal = -c / b;
+
+            stepsDisplay.innerHTML = `
+                <p>1. Pindahkan suku yang bukan y ke ruas kanan:</p>
+                <p class="pl-4 text-slate-400">${b}y = ${-a}x - ${c}</p>
+                <p>2. Bagi kedua ruas dengan ${b} untuk memisahkan y:</p>
+                <p class="pl-4 text-slate-400">y = ( ${-a} / ${b} )x + ( ${-c} / ${b} )</p>
+                <p class="text-emerald-400 font-bold">3. Bentuk Eksplisit Akhir: y = ${mVal.toFixed(2)}x ${cVal >= 0 ? '+ ' + cVal.toFixed(2) : '- ' + Math.abs(cVal).toFixed(2)}</p>
+            `;
+        }
+
+        // Level 19: Taxi Fare Calculator Logic
+        function calcTaxiFare() {
+            const km = parseFloat(document.getElementById('input_taxi_km').value) || 0;
+            const total = (km * 4500) + 10000;
+            document.getElementById('taxi_fare_result').innerText = `Total Biaya Perjalanan: Rp${total.toLocaleString('id-ID')}`;
+        }
+
+        // Level 22: Canvas Linear Graph Simulator
+        let canvas, ctx;
+        function initCanvas() {
+            canvas = document.getElementById('sim-canvas');
+            if (canvas) ctx = canvas.getContext('2d');
+        }
+
+        // Simulator Logic update
+        function updateSimulator() {
+            const m = parseFloat(document.getElementById('slider-m').value);
+            const c = parseFloat(document.getElementById('slider-c').value);
+            
+            scoreState.simulatorM = m;
+            scoreState.simulatorC = c;
+
+            document.getElementById('slider-m-val').innerText = m;
+            document.getElementById('slider-c-val').innerText = c;
+            document.getElementById('simulator-equation').innerText = `y = ${m}x ${c >= 0 ? '+ ' + c : '- ' + Math.abs(c)}`;
+
+            drawGraph(m, c);
+        }
+
+        function drawGraph(m, c) {
+            if (!ctx) return;
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const w = canvas.width;
+            const h = canvas.height;
+            const originX = w / 2;
+            const originY = h / 2;
+            const scale = 2; // Pixel per Unit
+
+            // Grid Lines
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 0.5;
+            for (let i = 10; i < w; i += 15) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, h);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(w, i);
+                ctx.stroke();
+            }
+
+            // X and Y Axes
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(originX, 0); ctx.lineTo(originX, h); // Y
+            ctx.moveTo(0, originY); ctx.lineTo(w, originY); // X
+            ctx.stroke();
+
+            // Draw line formula y = m*x + c
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 3.5;
+            ctx.beginPath();
+            
+            const startX_unit = -50;
+            const startY_unit = m * startX_unit + c;
+            const endX_unit = 50;
+            const endY_unit = m * endX_unit + c;
+
+            const cStartX = originX + startX_unit * scale;
+            const cStartY = originY - startY_unit * scale;
+            const cEndX = originX + endX_unit * scale;
+            const cEndY = originY - endY_unit * scale;
+
+            ctx.moveTo(cStartX, cStartY);
+            ctx.lineTo(cEndX, cEndY);
+            ctx.stroke();
+
+            // Dot Intersection with Sumbu Y
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.arc(originX, originY - c * scale, 5, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+
+        // Level 23: Interactive Quiz Logic
+        const ANSWER_KEYS = { 1: 'A', 2: 'B', 3: 'B' };
+
+        function answerQuiz(qNum, answer) {
+            scoreState.quizResponses[qNum] = answer;
+            // Clear current question selections
+            const buttons = document.querySelectorAll(`[id^="q${qNum}-"]`);
+            buttons.forEach(btn => btn.className = "quiz-btn text-left p-2.5 rounded bg-slate-950 border border-slate-800 text-slate-300 transition-all");
+
+            const selectedBtn = document.getElementById(`q${qNum}-${answer}`);
+            if (answer === ANSWER_KEYS[qNum]) {
+                selectedBtn.className = "quiz-btn text-left p-2.5 rounded bg-emerald-950/80 border border-emerald-500/80 text-emerald-400 font-bold transition-all";
+            } else {
+                selectedBtn.className = "quiz-btn text-left p-2.5 rounded bg-rose-950/80 border border-rose-500/80 text-rose-400 font-bold transition-all";
+            }
+        }
+
+        function restoreQuizAnswers() {
+            Object.keys(scoreState.quizResponses).forEach(qNum => {
+                const ans = scoreState.quizResponses[qNum];
+                answerQuiz(qNum, ans);
+            });
+        }
+
+        // Level 25: Certificate Logic
+        function updateCertificateName() {
+            const val = document.getElementById('cert-name-input')?.value || "AGEN ANINDYA";
+            scoreState.certificateName = val;
+            const display = document.getElementById('cert-display-name');
+            if (display) display.innerText = val;
+        }
+
+        function printCertificate() {
+            window.print();
+        }
+    </script>
+</body>
+</html>
